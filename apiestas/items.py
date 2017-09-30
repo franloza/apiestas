@@ -8,7 +8,20 @@
 import scrapy
 
 
-class ApiestasItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class Result(scrapy.Item):
+    name = scrapy.Field()
+    odd = scrapy.Field()
+
+
+class Match(scrapy.Item):
+    result_1 = scrapy.Field()
+    result_2 = scrapy.Field()
+    date = scrapy.Field()
+    date_extracted = scrapy.Field()
+    url = scrapy.Field()
+
+
+class SportCategory(scrapy.Item):
+    name = scrapy.Field
+    matches = scrapy.Field
+
