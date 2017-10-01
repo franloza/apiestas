@@ -13,15 +13,14 @@ class MarcaApuestasSpider(scrapy.Spider):
 
     # Attributes
     name = "marcaapuestas"
+    rotate_user_agent = True
     main_url = 'https://deportes.marcaapuestas.es/es/s/'
-    urls_categories = {
-        main_url + 'TENN/Tenis': 'tennis',
-        main_url + 'BASK/Baloncesto': ' basketball'
-    }
+    pages = ['TENN/Tenis', 'BASK/Baloncesto', '/VOLL/Vóleibol']
     forbidden_categories = {'Campeón', 'Ganador', 'Ganadora'}
 
     def start_requests(self):
-        for url in self.urls_categories.keys():
+        urls = [self.main_url + page for page in self.pages]
+        for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):

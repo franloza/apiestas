@@ -19,9 +19,3 @@ class Match(scrapy.Item):
     date = scrapy.Field()
     date_extracted = scrapy.Field()
     url = scrapy.Field()
-
-
-class SportCategory(scrapy.Item):
-    name = scrapy.Field
-    matches = scrapy.Field
-
