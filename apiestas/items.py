@@ -14,8 +14,10 @@ class Result(scrapy.Item):
 
 
 class Match(scrapy.Item):
+    id = scrapy.Field()
     result_1 = scrapy.Field()
     result_2 = scrapy.Field()
     date = scrapy.Field()
     date_extracted = scrapy.Field()
     url = scrapy.Field()
+    feed = scrapy.Field()
