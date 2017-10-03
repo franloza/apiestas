@@ -56,16 +56,18 @@ COOKIES_ENABLED = False
 
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
-#    'apiestas.middlewares.ApiestasSpiderMiddleware': 543,
-#}
+# SPIDER_MIDDLEWARES = {
+#     'scrapy_splash.SplashDeduplicateArgsMiddleware': 100,
+# }
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-DOWNLOADER_MIDDLEWARES = {
-#    'apiestas.middlewares.MyCustomDownloaderMiddleware': 543,
-     'apiestas.middlewares.RotateUserAgentMiddleware': 110,
-}
+# DOWNLOADER_MIDDLEWARES = {
+#      'apiestas.middlewares.RotateUserAgentMiddleware': 110,
+#      'scrapy_splash.SplashCookiesMiddleware': 723,
+#      'scrapy_splash.SplashMiddleware': 725,
+#      'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
+# }
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -78,7 +80,6 @@ DOWNLOADER_MIDDLEWARES = {
 ITEM_PIPELINES = {
     'apiestas.pipelines.ApiestasPipeline': 300,
 }
-
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -109,3 +110,7 @@ MONGODB_COLLECTION = "matches"
 MONGODB_USER = "apiestas"
 MONGODB_PASSWORD = "password"
 MONGODB_AUTHSOURCE = "admin"
+
+# Splash
+# SPLASH_URL = 'http://192.168.153.163:8050'
+# DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'

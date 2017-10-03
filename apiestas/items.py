@@ -21,3 +21,5 @@ class Match(scrapy.Item):
     date_extracted = scrapy.Field()
     url = scrapy.Field()
     feed = scrapy.Field()
+    sport = scrapy.Field()
+    tournament = scrapy.Field()
