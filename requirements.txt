@@ -2,6 +2,6 @@ scrapy
 dateparser
 pymongo
 numpy
-scikit-learn
+flask
 fuzzywuzzy[speedup]
 #scrapy-splash

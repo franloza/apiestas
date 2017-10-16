@@ -1,8 +1,6 @@
-from twisted.python.compat import izip
 from apiestas.utils.db import MongoDB
 import json
 from fuzzywuzzy import fuzz
-from sklearn.metrics.pairwise import pairwise_distances
 from itertools import combinations
 from bson.json_util import dumps
 from pandas.io.json import json_normalize
@@ -19,9 +17,11 @@ class ArbsFinder:
     def find_arbs(self):
         # Set possible combinations of feeds to find arbs in pairs
         feeds = self.matches.feed.unique()
-        feed_pairs = list(combinations(feeds,2))
+        feed_pairs = list(combinations(feeds, 2))
+        found_arbs = []
         for feeds in feed_pairs:
-            self.find_arbs_by_feeds(*feeds)
+            found_arbs.extend(self.find_arbs_by_feeds(*feeds))
+        return found_arbs
 
     def get_matches(self):
         json_str = dumps(self.collection.find())
@@ -31,20 +31,57 @@ class ArbsFinder:
         # Convert dates
         data['date'] = pd.to_datetime(data['date'], unit='ms')
         data['date_extracted'] = pd.to_datetime(data['date_extracted'], unit='ms')
+        data.set_index('_id.$oid', inplace=True)
 
-        return data.set_index('_id.$oid')
+        return data[data.date > pd.datetime.now()]
 
     def find_arbs_by_feeds(self, feed_1, feed_2):
         equal_matches = self.get_equal_matches(feed_1, feed_2)
+        arbs = []
         for match_1, match_2 in equal_matches:
+            margin = 1 / match_1["result_1.odd"] + 1 / match_2["result_2.odd"]
             # Find arb in any of the odss combination
-            if (1/match_1["result_1.odd"] + 1/match_2["result_2.odd"]) < 1:
+            if margin < 1:
                 # Arb found!
-                print("Arb found!")
-            elif (1/match_1["result_2.odd"] + 1/match_2["result_1.odd"]) < 1:
+                arb = {
+                    "match_1_info": match_1.to_dict(),
+                    "match_2_info": match_2.to_dict(),
+                    "arb_info": {
+                        "bet_1": {
+                            "player": match_1["result_1.name"],
+                            "odd": match_1["result_1.odd"],
+                            "feed":  match_1["feed"]} ,
+                        "bet_2": {
+                            "player": match_2["result_2.name"],
+                            "odd": match_2["result_2.odd"],
+                            "feed": match_2["feed"]},
+                        "margin": margin,
+                        "return": 1 - margin
+                    }
+                }
+                arbs.append(arb)
+            margin = 1 / match_1["result_2.odd"] + 1 / match_2["result_1.odd"]
+            if margin < 1:
                 # Arb found!
-                print("Arb found!")
-        print("No arbs :(")
+                arb = {
+                    "match_1_info": match_1.to_dict(),
+                    "match_2_info": match_2.to_dict(),
+                    "arb_info": {
+                        "bet_1": {
+                            "player": match_1["result_2.name"],
+                            "odd": match_1["result_2.odd"],
+                            "feed": match_1["feed"]}
+                        ,
+                        "bet_2": {
+                            "player": match_2["result_1.name"],
+                            "odd": match_2["result_1.odd"],
+                            "feed": match_2["feed"]},
+                        "margin": margin,
+                        "return": 1 - margin
+                    }
+                }
+                arbs.append(arb)
+        return arbs
 
     def get_equal_matches(self, feed_1, feed_2):
         dates = set(self.matches[self.matches.feed == feed_1].date).intersection(
@@ -60,8 +97,3 @@ class ArbsFinder:
                     similarity_scores[similarity_scores == similarity_scores.max()]
                 if most_similar_match[0] > self.SIMILARITY_THRESHOLD:
                     yield (match[1], matches_feed_2.loc[most_similar_match.index[0]])
-
-
-def pairwise(t):
-    it = iter(t)
-    return izip(it, it)
