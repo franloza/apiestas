@@ -5,25 +5,16 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 from scrapy import log
-from scrapy.conf import settings
 import pymongo
 import re
+
+from apiestas.utils.db import MongoDB
 
 
 class ApiestasPipeline(object):
     def __init__(self):
         self.pattern = re.compile('[\W_]+')
-        uri = "mongodb://{user}:{password}@{host}:{port}/{db}?authSource={auth_source}".format(
-            user=settings['MONGODB_USER'],
-            password=settings['MONGODB_PASSWORD'],
-            host=settings['MONGODB_HOST'],
-            port=settings['MONGODB_PORT'],
-            db=settings['MONGODB_DB'],
-            auth_source=settings['MONGODB_AUTHSOURCE']
-        )
-        connection = pymongo.MongoClient(uri)
-        db = connection[settings['MONGODB_DB']]
-        self.collection = db[settings['MONGODB_COLLECTION']]
+        self.collection = MongoDB().collection
 
     def process_item(self, item, spider):
         # Generate ID and set feed

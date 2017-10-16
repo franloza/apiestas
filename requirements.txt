@@ -1,4 +1,7 @@
 scrapy
 dateparser
 pymongo
+numpy
+scikit-learn
+fuzzywuzzy[speedup]
 #scrapy-splash
