@@ -19,18 +19,13 @@ def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
 
-@app.route('/arbs', methods=['GET'])
+@app.route('/', methods=['GET'])
 def render_arbs_page():
     return render_template('arbs.html')
 
 
-@app.route('/arbs', methods=['POST'])
+@app.route('/', methods=['POST'])
 def get_arbs():
-    if "secret_key" in request.form:
-        #TODO: Auth
-        pass
-    else:
-        return not_found(None)
     arbs = ArbsFinder().find_arbs()
     return jsonify(arbs)
 
