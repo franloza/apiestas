@@ -33,7 +33,7 @@ class ArbsFinder:
                  "margins": {
                      "mean": self.margins.mean(),
                      "std": self.margins.std(),
-                     "values": self.margins.values}}
+                     "values": self.margins.values.tolist()}}
         response["stats"] = stats
         return response
 
