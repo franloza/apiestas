@@ -1,17 +1,16 @@
 import pymongo
-from scrapy.conf import settings
-
+import apiestas.settings as st
 
 class MongoDB:
     def __init__(self):
         uri = "mongodb://{user}:{password}@{host}:{port}/{db}?authSource={auth_source}".format(
-            user=settings['MONGODB_USER'],
-            password=settings['MONGODB_PASSWORD'],
-            host=settings['MONGODB_HOST'],
-            port=settings['MONGODB_PORT'],
-            db=settings['MONGODB_DB'],
-            auth_source=settings['MONGODB_AUTHSOURCE']
+            user=st.MONGODB_USER,
+            password=st.MONGODB_PASSWORD,
+            host=st.MONGODB_HOST,
+            port=st.MONGODB_PORT,
+            db=st.MONGODB_DB,
+            auth_source=st.MONGODB_AUTHSOURCE
         )
         connection = pymongo.MongoClient(uri)
-        self.db = connection[settings['MONGODB_DB']]
-        self.collection = self.db[settings['MONGODB_COLLECTION']]
+        self.db = connection[st.MONGODB_DB]
+        self.collection = self.db[st.MONGODB_COLLECTION]
