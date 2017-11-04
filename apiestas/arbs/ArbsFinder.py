@@ -16,6 +16,9 @@ class ArbsFinder:
         self.margins = pd.Series([])
 
     def find_arbs(self):
+        # Check first if there is any match
+        if self.matches.empty:
+            return {"error":"There are no matches in the database"}
         # Set possible combinations of feeds to find arbs in pairs
         feeds = self.matches.feed.unique()
         feed_pairs = list(combinations(feeds, 2))
@@ -26,15 +29,16 @@ class ArbsFinder:
 
     def get_matches(self):
         json_str = dumps(self.collection.find())
-        data = json_normalize(json.loads(json_str))
-        data = data.rename(columns={'date.$date': 'date', 'date_extracted.$date': 'date_extracted'})
-
-        # Convert dates
-        data['date'] = pd.to_datetime(data['date'], unit='ms')
-        data['date_extracted'] = pd.to_datetime(data['date_extracted'], unit='ms')
-        data.set_index('_id.$oid', inplace=True)
-
-        return data[data.date > pd.datetime.now()]
+        try:
+            data = json_normalize(json.loads(json_str))
+            data = data.rename(columns={'date.$date': 'date', 'date_extracted.$date': 'date_extracted'})
+            # Convert dates
+            data['date'] = pd.to_datetime(data['date'], unit='ms')
+            data['date_extracted'] = pd.to_datetime(data['date_extracted'], unit='ms')
+            data.set_index('_id.$oid', inplace=True)
+            return data[data.date > pd.datetime.now()]
+        except Exception:
+            return pd.DataFrame()
 
     def find_arbs_by_feeds(self, feed_1, feed_2):
         equal_matches = self.get_equal_matches(feed_1, feed_2)
