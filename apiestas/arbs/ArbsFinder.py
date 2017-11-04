@@ -5,7 +5,7 @@ from itertools import combinations
 from bson.json_util import dumps
 from pandas.io.json import json_normalize
 import pandas as pd
-
+import numpy as np
 
 class ArbsFinder:
     SIMILARITY_THRESHOLD = 75
@@ -13,6 +13,7 @@ class ArbsFinder:
     def __init__(self):
         self.collection = MongoDB().collection
         self.matches = self.get_matches()
+        self.margins = pd.Series([])
 
     def find_arbs(self):
         # Set possible combinations of feeds to find arbs in pairs
@@ -38,8 +39,10 @@ class ArbsFinder:
     def find_arbs_by_feeds(self, feed_1, feed_2):
         equal_matches = self.get_equal_matches(feed_1, feed_2)
         arbs = []
+        margins = np.array([])
         for match_1, match_2 in equal_matches:
             margin = 1 / match_1["result_1.odd"] + 1 / match_2["result_2.odd"]
+            margins = np.append(margins, margin)
             # Find arb in any of the odss combination
             if margin < 1:
                 # Arb found!
@@ -81,6 +84,10 @@ class ArbsFinder:
                     }
                 }
                 arbs.append(arb)
+
+        # Append margins to series
+        self.margins = self.margins.append(pd.Series(margins), ignore_index=True)
+
         return arbs
 
     def get_equal_matches(self, feed_1, feed_2):

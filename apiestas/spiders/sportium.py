@@ -9,7 +9,7 @@ from apiestas.items import Match, Result
 from apiestas.utils.utils import extract_with_css
 
 
-class MarcaApuestasSpider(scrapy.Spider):
+class SportiumSpider(scrapy.Spider):
 
     # Attributes
     name = "sportium"
