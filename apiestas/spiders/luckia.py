@@ -5,10 +5,9 @@ import dateparser
 from datetime import datetime as dt
 from datetime import timedelta as td
 
-from scrapy_splash import SplashRequest
-
-from apiestas.items import Match, Result
-from apiestas.utils.utils import extract_with_css
+#from scrapy_splash import SplashRequest
+#from apiestas.items import Match, Result
+#from apiestas.utils.utils import extract_with_css
 
 
 class LuckiaSpider(scrapy.Spider):
