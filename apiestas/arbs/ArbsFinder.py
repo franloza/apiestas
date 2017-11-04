@@ -25,7 +25,17 @@ class ArbsFinder:
         found_arbs = []
         for feeds in feed_pairs:
             found_arbs.extend(self.find_arbs_by_feeds(*feeds))
-        return found_arbs
+
+        # Build response dictionary
+        response = {"arbs": found_arbs}
+        # Add some stats
+        stats = {"matches_processed": self.matches.shape[0],
+                 "margins": {
+                     "mean": self.margins.mean(),
+                     "std": self.margins.std(),
+                     "values": self.margins.values}}
+        response["stats"] = stats
+        return response
 
     def get_matches(self):
         json_str = dumps(self.collection.find())
