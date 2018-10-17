@@ -1,12 +1,11 @@
-from collections import namedtuple
-
-import scrapy
-import dateparser
 from datetime import datetime as dt
 from datetime import timedelta as td
 
-from apiestas.items import Match, Result
-from apiestas.utils.utils import extract_with_css
+import scrapy
+import dateparser
+
+from ..items import Match, Result
+from ..utils.utils import extract_with_css
 
 
 class SportiumSpider(scrapy.Spider):

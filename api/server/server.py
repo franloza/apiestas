@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, abort, request, make_response, url_for, render_template
-from apiestas.arbs import ArbsFinder
+from .arbs import ArbsFinder
 
 app = Flask(__name__, static_url_path="")
 

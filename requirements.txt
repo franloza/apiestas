@@ -1,7 +1,0 @@
-scrapy
-dateparser
-pymongo
-numpy
-flask
-fuzzywuzzy[speedup]
-#scrapy-splash

@@ -1,13 +1,8 @@
-from collections import namedtuple
-
-import scrapy
-import dateparser
 from datetime import datetime as dt
 from datetime import timedelta as td
 
-#from scrapy_splash import SplashRequest
-#from apiestas.items import Match, Result
-#from apiestas.utils.utils import extract_with_css
+import scrapy
+import dateparser
 
 
 class LuckiaSpider(scrapy.Spider):
@@ -31,12 +26,13 @@ class LuckiaSpider(scrapy.Spider):
         # Get IDs of the tournaments
         for tournament in response.css('li.league_check'):
             id = tournament.root.attrib['onclick']
-            yield SplashRequest(
-                response.url,
-                endpoint='render.html',
-                args={'js_source': id},
-                callback=self.parse_tournament
-            )
+            # yield SplashRequest(
+            #     response.url,
+            #     endpoint='render.html',
+            #     args={'js_source': id},
+            #     callback=self.parse_tournament
+            # )
+            raise NotImplementedError()
 
     def parse_tournament(self, response):
         # TODO: ASPX Page with Javascript request. Difficult to process

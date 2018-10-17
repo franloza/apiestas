@@ -1,15 +1,12 @@
 import json
-from collections import namedtuple
+from datetime import datetime as dt
+from datetime import timedelta as td
+import re
 
 import scrapy
 import dateparser
-from datetime import datetime as dt
-from datetime import timedelta as td
 
-from apiestas.items import Match, Result
-from apiestas.utils.utils import extract_with_css
-import re
-
+from ..items import Match, Result
 
 class CodereSpider(scrapy.Spider):
 

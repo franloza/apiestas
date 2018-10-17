@@ -1,5 +1,5 @@
 import pymongo
-import apiestas.settings as st
+import ..settings
 
 class MongoDB:
     def __init__(self):
