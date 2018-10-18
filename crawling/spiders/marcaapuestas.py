@@ -41,7 +41,7 @@ class MarcaApuestasSpider(scrapy.Spider):
                 except KeyError:
                     break
                 result_item = Result(name=str(i+1), odd=float(extract_with_css(player, "span.price.dec::text")))
-                match_item['results'].append(result_item)
+                match_item['results'].append(dict(result_item))
                 
             match_item['url'] = response.url
             match_item['date_extracted'] = dt.now()
