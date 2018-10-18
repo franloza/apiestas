@@ -34,15 +34,18 @@ class MarcaApuestasSpider(scrapy.Spider):
     def parse_matches(self, response):
         for match in response.css('table.coupon tbody tr'):
             match_item = Match()
+            match_item['results'] = []
             for i, player in enumerate(match.css("td.seln")):
-                result_item = Result(name=extract_with_css(player, "span.seln-name::text"),
-                                     odd=float(extract_with_css(player, "span.price.dec::text")))
                 try:
-                    match_item['result_{}'.format(i + 1)] = result_item
+                    match_item['team_{}'.format(i + 1)] = extract_with_css(player, "span.seln-name::text")
                 except KeyError:
                     break
+                result_item = Result(name=str(i+1), odd=float(extract_with_css(player, "span.price.dec::text")))
+                match_item['results'].append(result_item)
+                
             match_item['url'] = response.url
             match_item['date_extracted'] = dt.now()
+            match_item['feed'] = self.name
 
             # Get datetime of the match
             date_str = extract_with_css(match, "td.time span.date::text")

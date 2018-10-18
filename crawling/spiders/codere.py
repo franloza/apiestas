@@ -48,6 +48,7 @@ class CodereSpider(scrapy.Spider):
                     try:
                         match_item['date'] = dateparser.parse((re.search('(-?\d+)', match['StarDate']).group(0)))
                         match_item['date_extracted'] = dt.now()
+                        match_item['feed'] = self.name
                     except AttributeError:
                         continue
                     yield match_item

@@ -9,4 +9,4 @@ COPY . /usr/src/app
 WORKDIR /usr/src/app
 
 # Install dependencies
-RUN pipenv install --system --deploy
+RUN pipenv install --system --deploy --ignore-pipfile

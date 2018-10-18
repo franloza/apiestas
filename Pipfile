@@ -4,11 +4,14 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-scrapy = "*"
-pymongo = "*"
-dateparser = "*"
+scrapy = "==1.5.1"
+pymongo = "==3.7.2"
+dateparser = "==0.7.0"
+flask = "==1.0.2"
 
 [dev-packages]
+pylint = "==2.1.1"
+rope = "*"
 
 [requires]
 python_version = "3.6"

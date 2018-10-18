@@ -15,8 +15,9 @@ class Result(scrapy.Item):
 
 class Match(scrapy.Item):
     id = scrapy.Field()
-    result_1 = scrapy.Field()
-    result_2 = scrapy.Field()
+    team_1 = scrapy.Field()
+    team_2 = scrapy.Field()
+    results = scrapy.Field()
     date = scrapy.Field()
     date_extracted = scrapy.Field()
     url = scrapy.Field()

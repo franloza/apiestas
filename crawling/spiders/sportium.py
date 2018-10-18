@@ -38,6 +38,7 @@ class SportiumSpider(scrapy.Spider):
                     break
             match_item['url'] = response.url
             match_item['date_extracted'] = dt.now()
+            match_item['feed'] = self.name
 
             # Get datetime of the match
             date_str = extract_with_css(match, "td.time span.date::text")
