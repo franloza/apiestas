@@ -15,11 +15,12 @@ services:
   crawler:
     container_name: crawler
     restart: always
-    build: ./crawling
+    build: .
     env_file:
       - ./.env
     depends_on:
       - db
+    command: scrapy runspider crawling/spiders/marcaapuestas.py
 volumes:
   mongo:
     name: mongo
