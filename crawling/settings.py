@@ -12,7 +12,7 @@
 BOT_NAME = 'apiestas'
 
 SPIDER_MODULES = ['crawling.spiders']
-NEWSPIDER_MODULE = 'crawling.spiders'
+NEWSPIDER_MODULE = 'spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -63,7 +63,7 @@ COOKIES_ENABLED = False
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 # DOWNLOADER_MIDDLEWARES = {
-#      'apiestas.middlewares.RotateUserAgentMiddleware': 110,
+#      'crawling.middlewares.RotateUserAgentMiddleware': 110,
 #      'scrapy_splash.SplashCookiesMiddleware': 723,
 #      'scrapy_splash.SplashMiddleware': 725,
 #      'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
@@ -78,7 +78,7 @@ COOKIES_ENABLED = False
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'apiestas.pipelines.ApiestasPipeline': 300,
+    'crawling.pipelines.ApiestasPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -101,16 +101,3 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
-
-# Data persistence settings (MongoDB)
-MONGODB_HOST = "localhost"
-MONGODB_PORT = 27017
-MONGODB_DB = "apiestas"
-MONGODB_COLLECTION = "matches"
-MONGODB_USER = "apiestas"
-MONGODB_PASSWORD = "password"
-MONGODB_AUTHSOURCE = "admin"
-
-# Splash
-# SPLASH_URL = 'http://192.168.153.163:8050'
-# DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'

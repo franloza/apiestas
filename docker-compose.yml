@@ -1,0 +1,25 @@
+version: '3.4'
+services:
+  db:
+    container_name: "mongo"
+    restart: always
+    image: mongo:4
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - mongo:/data/db'
+    ports:
+      - "27017:27017"
+    command: mongod --logpath /dev/null
+  crawler:
+    container_name: crawler
+    restart: always
+    build: ./crawling
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+volumes:
+  mongo:
+    name: mongo

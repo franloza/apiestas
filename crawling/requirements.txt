@@ -1,3 +1,0 @@
-scrapy
-pymongo
-dateparser

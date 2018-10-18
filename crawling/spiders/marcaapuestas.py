@@ -4,8 +4,8 @@ from datetime import timedelta as td
 import scrapy
 import dateparser
 
-from ..items import Match, Result
-from ..utils.utils import extract_with_css
+from crawling.items import Match, Result
+from crawling.utils.utils import extract_with_css
 
 
 class MarcaApuestasSpider(scrapy.Spider):

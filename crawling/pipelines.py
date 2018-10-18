@@ -7,14 +7,14 @@
 from scrapy import log
 import pymongo
 import re
-
-from apiestas.utils.db import MongoDB
+from db.mongo import MongoDB
+from db import settings as st
 
 
 class ApiestasPipeline(object):
     def __init__(self):
         self.pattern = re.compile('[\W_]+')
-        self.collection = MongoDB().collection
+        self.collection = MongoDB(st.MONGO_ODDS_COLLECTION).collection
 
     def process_item(self, item, spider):
         # Generate ID and set feed

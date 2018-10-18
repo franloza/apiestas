@@ -6,7 +6,7 @@ import re
 import scrapy
 import dateparser
 
-from ..items import Match, Result
+from crawling.items import Match, Result
 
 class CodereSpider(scrapy.Spider):
 

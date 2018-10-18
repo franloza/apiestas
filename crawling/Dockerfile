@@ -2,10 +2,11 @@ FROM python:3.6
 MAINTAINER Fran LOZANO <franloza@ucm.es>
 
 # Set the working directory
+COPY . /usr/src/app
 WORKDIR /usr/src/app
 
 # Install dependencies
-COPY . .
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip install pipenv
+RUN pipenv install --system
 
-CMD ["scrapy", "runspider", "spiders/marcapuestas.py"]
+CMD ["scrapy", "runspider", "crawling/spiders/marcapuestas.py"]
