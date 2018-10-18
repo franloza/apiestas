@@ -4,9 +4,10 @@ LABEL maintainer="franloza@ucm.es"
 # Install pipenv
 RUN pip install pipenv
 
-# Set the working directory
-COPY . /usr/src/app
+# Optimize dockerfile caching dependencies
+ADD Pipfile Pipfile.lock /usr/src/app/
 WORKDIR /usr/src/app
-
-# Install dependencies
 RUN pipenv install --system --deploy --ignore-pipfile
+
+# Add project files
+ADD . /usr/src/app
