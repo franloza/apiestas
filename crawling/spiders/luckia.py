@@ -4,7 +4,7 @@ from datetime import timedelta as td
 import scrapy
 import dateparser
 
-
+# TODO: Make it work
 class LuckiaSpider(scrapy.Spider):
 
     # Attributes

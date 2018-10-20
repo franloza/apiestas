@@ -16,11 +16,13 @@ services:
     container_name: crawler
     restart: always
     build: .
-    env_file:
-      - ./.env
+    environment:
+      - APP_ENV=dev
+      - MONGO_HOST=db
+      - MONGO_PORT=27017
     depends_on:
       - db
-    command: scrapy runspider crawling/spiders/marcaapuestas.py
+    command: scrapy runspider crawling/spiders/elcomparador.py
 volumes:
   mongo:
     name: mongo

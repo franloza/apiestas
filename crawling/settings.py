@@ -14,7 +14,6 @@ BOT_NAME = 'apiestas'
 SPIDER_MODULES = ['crawling.spiders']
 NEWSPIDER_MODULE = 'spiders'
 
-
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'apiestas (+http://www.yourdomain.com)'
 USER_AGENT_CHOICES = [
@@ -101,3 +100,8 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+SPORTS = {
+    1: "football",
+    2: ""
+}

@@ -7,7 +7,7 @@ import dateparser
 from crawling.items import Match, Result
 from crawling.utils.utils import extract_with_css
 
-
+#TODO: Adapt it to merge with elcomparador data
 class MarcaApuestasSpider(scrapy.Spider):
 
     # Attributes
@@ -45,6 +45,7 @@ class MarcaApuestasSpider(scrapy.Spider):
                 
             match_item['url'] = response.url
             match_item['date_extracted'] = dt.now()
+            match_item['bookmaker'] = self.name
             match_item['feed'] = self.name
 
             # Get datetime of the match

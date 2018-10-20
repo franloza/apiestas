@@ -7,7 +7,7 @@ import dateparser
 from crawling.items import Match, Result
 from crawling.utils.utils import extract_with_css
 
-
+# TODO: Adapt it to new item structure
 class SportiumSpider(scrapy.Spider):
 
     # Attributes

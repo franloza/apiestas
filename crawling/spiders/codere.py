@@ -8,6 +8,7 @@ import dateparser
 
 from crawling.items import Match, Result
 
+# TODO: Adapt it to new item structure
 class CodereSpider(scrapy.Spider):
 
     # Attributes
