@@ -39,7 +39,8 @@ class ElComparadorSpider(scrapy.Spider):
             Bookmakers.BETFAIR : "{}",
             Bookmakers.INTERWETTEN : "https://www.interwetten.es/es/apuestas-deportivas/",
             Bookmakers.PAF : "https://www.paf.es/betting/fixed_odds#/",
-            Bookmakers.SPORTIUM : "https://sports.sportium.es/es"
+            Bookmakers.SPORTIUM : "https://sports.sportium.es/es",
+            Bookmakers.LUCKIA : "'https://www.luckia.es/apuestas/?btag=#/event/{}'"
         }
     TIME_WINDOW = 7 # Days
 
@@ -57,6 +58,10 @@ class ElComparadorSpider(scrapy.Spider):
         qry_params = parse.urlparse(response.url).query
         date = parse.parse_qs(qry_params)["fecha"][0]
         sport = self.SPORTS_MAP[int(parse.parse_qs(qry_params)["deporte"][0])].value
+        # Check if there are matches for this date
+        if response.css(".sin_partidos"):
+            self.logger.info('No matches for date %s and sport %s', date, sport)
+            return
         for element in response.selector.xpath("//body/div"):
             identifier = element.xpath("@id").extract()[0]           
             if identifier == "separador":
@@ -69,10 +74,10 @@ class ElComparadorSpider(scrapy.Spider):
                     match_item = Match()
                     match_item["tournament"] = tournament_name
                     # Get time of match
-                    date = "{date} {hour}".format(
+                    match_datetime = "{date} {hour}".format(
                         date=date,
-                        hour= extract_with_css(element.css("span"), "::text"))
-                    match_item["date"] = dt.strptime(date, "%Y-%m-%d %H:%M")
+                        hour=extract_with_css(element.css("span"), "::text"))
+                    match_item["date"] = dt.strptime(match_datetime, "%Y-%m-%d %H:%M")
                     # Get teams
                     teams = element.css(".equipo")
                     if len(teams) == 2:
