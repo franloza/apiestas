@@ -8,6 +8,9 @@
 #     http://doc.scrapy.org/en/latest/topics/settings.html
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
+import os
+
+env = os.environ.get("APP_ENV", "dev")
 
 BOT_NAME = 'apiestas'
 
@@ -101,7 +104,19 @@ ITEM_PIPELINES = {
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-SPORTS = {
-    1: "football",
-    2: ""
-}
+# Configure database settings
+MONGO_MATCHES_COLLECTION = "matches"
+
+if env == "dev":
+    # Development settings
+    MONGO_HOST = os.environ.get("MONGO_HOST", "127.0.0.1")
+    MONGO_PORT = int(os.environ.get("MONGO_PORT", 27017))
+    MONGO_DBNAME = "apiestas"
+    TIMEZONE = os.environ.get("TIMEZONE", "Europe/Madrid")
+elif env == "prod":
+    # Production settings
+    MONGO_HOST = os.getenv('MONGO_HOST')
+    MONGO_PORT = int(os.getenv('MONGO_PORT'))
+    MONGO_DBNAME = os.getenv('MONGO_DBNAME')
+else:
+    raise EnvironmentError("{} is not a valid APP_ENV".format(env))

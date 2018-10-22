@@ -10,6 +10,8 @@ from enum import Enum
 
 class Bet(scrapy.Item):
     bookmaker = scrapy.Field()
+    feed = scrapy.Field()
+    date_extracted = scrapy.Field()
     results = scrapy.Field()
     url = scrapy.Field()
 
@@ -18,13 +20,11 @@ class Result(scrapy.Item):
     odds = scrapy.Field()
 
 class Match(scrapy.Item):
-    id = scrapy.Field()
+    _id = scrapy.Field()
     team_1 = scrapy.Field()
     team_2 = scrapy.Field()
     date = scrapy.Field()
-    date_extracted = scrapy.Field()
     bets = scrapy.Field()
-    feed = scrapy.Field()
     sport = scrapy.Field()
     tournament = scrapy.Field()
 

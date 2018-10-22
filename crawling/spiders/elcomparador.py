@@ -103,15 +103,15 @@ class ElComparadorSpider(scrapy.Spider):
                                     odds = float(extract_with_css(odds_elem.xpath("a"), "::text"))
                                     if bookmakers[idx].value not in bets:
                                         bets[bookmakers[idx].value] = Bet(
-                                            {'bookmaker': bookmakers[idx].value, 'url': url, 'results': []})
+                                            {'bookmaker': bookmakers[idx].value,
+                                             'url': url, 'feed': self.name, 'results': [],
+                                             'date_extracted': dt.now()})
                                     bets[bookmakers[idx].value]["results"].append(
                                         Result({"name": result_name, "odds": odds})
                                     )
                         else:
                             break
                     match_item["bets"] = list(bets.values())                          
-                    match_item["date_extracted"] = dt.now()
-                    match_item["feed"] = self.name
                     match_item["sport"] = sport
                     yield match_item
                 else:

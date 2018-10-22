@@ -7,7 +7,7 @@ name = "pypi"
 scrapy = "==1.5.1"
 pymongo = "==3.7.2"
 dateparser = "==0.7.0"
-flask = "==1.0.2"
+eve = "==0.8.1"
 
 [dev-packages]
 pylint = "==2.1.1"

@@ -7,23 +7,32 @@
 from scrapy import log
 import pymongo
 import re
-from db.mongo import MongoDB
-from db import settings as st
+from . import settings as st
 
 
 class ApiestasPipeline(object):
     def __init__(self):
         self.pattern = re.compile(r'[\W_]+')
-        self.collection = MongoDB(st.MONGO_MATCHES_COLLECTION).collection
+        self.collection = pymongo.MongoClient(
+            st.MONGO_HOST, st.MONGO_PORT)[st.MONGO_DBNAME][st.MONGO_MATCHES_COLLECTION]
 
     def process_item(self, item, spider):
         # Generate ID and set feed
-        item['id'] = self.get_id(item)
+        _id = self.get_id(item)
 
-        # Insert or update document in DB
-        filter = {'feed': item["feed"], 'id': item['id']}
-        self.collection.update(filter, item, upsert=True)
-        log.msg("Match with ID {} added to the matches database".format(item['id']),
+        if self.collection.find_one({"_id": _id}):
+            # Update bets
+            bets = item["bets"]
+            for bet in bets:   
+                self.collection.update({"_id": _id, "bets.bookmaker": bet["bookmaker"]},
+                        {"$set": {"bets.$": bet}})
+            log.msg("Match with ID {} updated with {} bets".format(_id, len(bets)),
+                level=log.DEBUG)
+        else:
+            # Insert match in DB
+            item["_id"] = _id
+            self.collection.insert(item)
+            log.msg("Match with ID {} inserted with {} bets".format(item['_id'], len(item["bets"])),
                 level=log.DEBUG)
         return item
 

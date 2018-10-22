@@ -23,6 +23,19 @@ services:
     depends_on:
       - db
     command: scrapy runspider crawling/spiders/elcomparador.py
+  api:
+    container_name: api
+    restart: always
+    build: .
+    environment:
+      - APP_ENV=dev
+      - MONGO_HOST=db
+      - MONGO_PORT=27017
+    ports:
+      - 5000:5000
+    depends_on:
+      - db
+    command: python api/run.py
 volumes:
   mongo:
     name: mongo
