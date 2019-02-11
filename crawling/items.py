@@ -33,6 +33,7 @@ class Sports(Enum):
     BASKETBALL = "Basketball"
     TENNIS = "Tennis"
     ICE_HOCKEY ="Ice hockey"
+    VOLLEYBALL = "Volleyball"
 
 class Bookmakers(Enum):
     BET365 = "Bet365"
@@ -45,3 +46,8 @@ class Bookmakers(Enum):
     LUCKIA = "Luckia"
     SPORT888 = "888 Sport"
     SPORTIUM = "Sportium"
+    CODERE = "Codere"
+    MARATHON_BET = "Marathon Bet",
+    BETWAY = "Betway",
+    RETABET= "RETAbet"
+

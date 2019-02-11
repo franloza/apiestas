@@ -29,7 +29,10 @@ class ElComparadorSpider(scrapy.Spider):
         "betfair": Bookmakers.BETFAIR,
         "luckia": Bookmakers.LUCKIA,
         "sport888": Bookmakers.SPORT888,
-        "sportium": Bookmakers.SPORTIUM}
+        "sportium": Bookmakers.SPORTIUM,
+        "marathonbet": Bookmakers.MARATHON_BET,
+        "betway": Bookmakers.BETWAY,
+        "retabet": Bookmakers.RETABET}
     URL_MAP = {
             Bookmakers.BET365 : "http://www.bet365.com/betslip/instantbet/default.aspx?{}",
             Bookmakers.WILLIAM_HILL :'http://sports.williamhill.es/bet_esp/es/betting/e/{}',
@@ -40,7 +43,10 @@ class ElComparadorSpider(scrapy.Spider):
             Bookmakers.INTERWETTEN : "https://www.interwetten.es/es/apuestas-deportivas/",
             Bookmakers.PAF : "https://www.paf.es/betting/fixed_odds#/",
             Bookmakers.SPORTIUM : "https://sports.sportium.es/es",
-            Bookmakers.LUCKIA : "'https://www.luckia.es/apuestas/?btag=#/event/{}'"
+            Bookmakers.LUCKIA : "'https://www.luckia.es/apuestas/?btag=#/event/{}'",
+            Bookmakers.MARATHON_BET: "https://www.marathonbet.es/es/all-events.htm?cpcids={}",
+            Bookmakers.BETWAY: "{}",
+            Bookmakers.RETABET: "https://apuestas.retabet.es/",
         }
     TIME_WINDOW = 7 # Days
 
@@ -54,7 +60,7 @@ class ElComparadorSpider(scrapy.Spider):
     def parse(self, response):
         """Parse all the sports"""
         tournament_name = ""
-        bookmakers = None
+        bookmakers = []
         qry_params = parse.urlparse(response.url).query
         date = parse.parse_qs(qry_params)["fecha"][0]
         sport = self.SPORTS_MAP[int(parse.parse_qs(qry_params)["deporte"][0])].value
