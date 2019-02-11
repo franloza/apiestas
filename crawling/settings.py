@@ -120,3 +120,6 @@ elif env == "prod":
     MONGO_DBNAME = os.getenv('MONGO_DBNAME')
 else:
     raise EnvironmentError("{} is not a valid APP_ENV".format(env))
+
+# FUZZY INDEX SEARCH
+FUZZY_SIMILARITY_THRESHOLD = 80

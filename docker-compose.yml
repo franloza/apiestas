@@ -22,7 +22,7 @@ services:
       - MONGO_PORT=27017
     depends_on:
       - db
-    command: scrapy runspider crawling/spiders/elcomparador.py
+    command: bash -c "scrapy runspider crawling/spiders/elcomparador.py && scrapy runspider crawling/spiders/codere.py"
   api:
     container_name: api
     restart: always

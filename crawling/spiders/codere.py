@@ -6,9 +6,8 @@ import re
 import scrapy
 import dateparser
 
-from crawling.items import Match, Result
+from crawling.items import Match, Result, Bet, Sports, Bookmakers
 
-# TODO: Adapt it to new item structure
 class CodereSpider(scrapy.Spider):
 
     # Attributes
@@ -16,7 +15,8 @@ class CodereSpider(scrapy.Spider):
     rotate_user_agent = True
     main_url = 'https://m.apuestas.codere.es/csbgonline/home/GetSports?languageCode=es'
     sports = ['Baloncesto', 'Tenis', 'Voleibol']
-    #forbidden_categories = {'Campeón', 'Ganador', 'Ganadora'}
+    SPORTS_MAP = {"volleyball": Sports.VOLLEYBALL, "basketball": Sports.BASKETBALL,
+                  "tennis": Sports.TENNIS}
 
     def start_requests(self):
         yield scrapy.Request(url=self.main_url, callback=self.parse)
@@ -37,19 +37,26 @@ class CodereSpider(scrapy.Spider):
     def parse_matches(self, response):
         matches = json.loads(response.body_as_unicode())
         for match in matches:
+            match_item = Match()
             for game in match['Games']:
                 if game['Name'].lower() == 'ganador del partido':
                     results = game['Results']
                     match_item = Match()
-                    match_item['result_1'] = Result(name=results[0]['Name'], odd=results[0]['Odd'])
-                    match_item['result_2'] = Result(name=results[1]['Name'], odd=results[1]['Odd'])
-                    match_item['sport'] = match['SportHandle']
+                    match_item['team_1'] = results[0]['Name']
+                    match_item['team_2'] = results[1]['Name']
+                    bet = Bet()
+                    bet["bookmaker"] = Bookmakers.CODERE.value
+                    bet["feed"] = self.name
+                    bet['date_extracted'] = dt.now()
+                    bet["url"] = response.url
+                    bet["results"] = [Result(name="1", odds= results[0]['Odd']),
+                                      Result(name="2", odds=results[1]['Odd'])]
+                    match_item["bets"] = [bet]
+                    match_item['sport'] = self.SPORTS_MAP[match['SportHandle']].value
                     match_item['tournament'] = match['LeagueName']
                     # Get Date
                     try:
                         match_item['date'] = dateparser.parse((re.search('(-?\d+)', match['StarDate']).group(0)))
-                        match_item['date_extracted'] = dt.now()
-                        match_item['feed'] = self.name
                     except AttributeError:
                         continue
                     yield match_item
