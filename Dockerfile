@@ -16,5 +16,7 @@ ENV PATH="/build/.venv/bin:$PATH"
 WORKDIR /usr/src/app
 ADD . /usr/src/app
 
+ENTRYPOINT ["python", "main.py"]
+
 
 
