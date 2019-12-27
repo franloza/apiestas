@@ -4,7 +4,6 @@ from urllib import parse
 import re
 
 import scrapy
-import dateparser
 
 from crawling.items import Match, Result, Bet, Sports, Bookmakers
 from crawling.utils.utils import extract_with_css
@@ -32,7 +31,8 @@ class ElComparadorSpider(scrapy.Spider):
         "sportium": Bookmakers.SPORTIUM,
         "marathonbet": Bookmakers.MARATHON_BET,
         "betway": Bookmakers.BETWAY,
-        "retabet": Bookmakers.RETABET}
+        "retabet": Bookmakers.RETABET,
+        "leovegas": Bookmakers.LEOVEGAS}
     URL_MAP = {
             Bookmakers.BET365 : "http://www.bet365.com/betslip/instantbet/default.aspx?{}",
             Bookmakers.WILLIAM_HILL :'http://sports.williamhill.es/bet_esp/es/betting/e/{}',
@@ -47,6 +47,7 @@ class ElComparadorSpider(scrapy.Spider):
             Bookmakers.MARATHON_BET: "https://www.marathonbet.es/es/all-events.htm?cpcids={}",
             Bookmakers.BETWAY: "{}",
             Bookmakers.RETABET: "https://apuestas.retabet.es/",
+            Bookmakers.LEOVEGAS: 'https://www.leovegas.es/es-es/'
         }
     TIME_WINDOW = 7 # Days
 

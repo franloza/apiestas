@@ -50,4 +50,5 @@ class Bookmakers(Enum):
     MARATHON_BET = "Marathon Bet",
     BETWAY = "Betway",
     RETABET= "RETAbet"
+    LEOVEGAS="LeoVegas"
 
