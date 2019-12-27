@@ -1,13 +1,20 @@
-FROM python:3.6
-LABEL maintainer="franloza@ucm.es"
+FROM python:3.6 as build
 
-# Install pipenv
+ENV LC_ALL C.UTF-8
+ENV LANG C.UTF-8
+
 RUN pip install pipenv
 
-# Optimize dockerfile caching dependencies
-ADD Pipfile Pipfile.lock /usr/src/app/
-WORKDIR /usr/src/app
-RUN pipenv install --system --deploy --ignore-pipfile
+WORKDIR /build
+COPY Pipfile Pipfile.lock /build/
+RUN bash -c 'PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy --ignore-pipfile'
 
-# Add project files
+FROM python:3.6-slim as app
+
+COPY --from=build /build /build
+ENV PATH="/build/.venv/bin:$PATH"
+WORKDIR /usr/src/app
 ADD . /usr/src/app
+
+
+
