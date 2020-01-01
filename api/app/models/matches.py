@@ -1,5 +1,5 @@
 import datetime
-from typing import List
+from typing import List, Optional
 
 from app.models.bets import Bet
 from app.models.common import DateTimeModelMixin
@@ -31,7 +31,7 @@ class MatchInResponse(RWModel):
 class MatchFilterParams(RWModel):
     commence_day: datetime.date
     sport: str
-    tournament: str
+    tournament: Optional[str]
 
 
 class ManyMatchesInResponse(RWModel):

@@ -11,6 +11,7 @@ async def connect_to_db(app: FastAPI) -> None:
         str(DATABASE_URL),
         maxPoolSize=MAX_CONNECTIONS_COUNT,
         minPoolSize=MIN_CONNECTIONS_COUNT)
+    logger.debug(await app.state.db.server_info())
     logger.info("Connection established")
 
 

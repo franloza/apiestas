@@ -6,7 +6,7 @@ from starlette.requests import Request
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from app.core.config import config
+from app.core import config
 from app.db.repositories.base import BaseRepository
 
 

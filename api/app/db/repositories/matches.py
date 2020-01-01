@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from datetime import datetime
+from datetime import datetime, timedelta
 from time import mktime
 from typing import List
 
@@ -30,11 +30,12 @@ class MatchesRepository(BaseRepository):
             raise EntityDoesNotExist("match with slug {0} does not exist".format(slug))
 
     async def filter_matches(self, commence_day: datetime.date, sport : str, tournament :  str = None) -> List[Match]:
-        query = {"sport": sport}
+        commence_time = datetime.combine(commence_day, datetime.min.time())
+        query = {"sport": sport, 'commence_time': {'$gte': commence_time, '$lt': commence_time + timedelta(days=1)}}
         if tournament:
             query["tournament"] = tournament
-        matches_docs = await self.client.find(query)
-        return [Match(**match) for match in matches_docs]
+        matches_docs = self.client.find(query)
+        return [Match(**match) async for match in matches_docs]
 
     async def upsert_match(self, match: MatchInUpsert) -> Match:
         slug = await self.get_match_slug(match)
