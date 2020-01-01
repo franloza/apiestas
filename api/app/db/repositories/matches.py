@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from datetime import datetime
 from time import mktime
+from typing import List
 
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -28,13 +29,20 @@ class MatchesRepository(BaseRepository):
         else:
             raise EntityDoesNotExist("match with slug {0} does not exist".format(slug))
 
+    async def filter_matches(self, commence_day: datetime.date, sport : str, tournament :  str = None) -> List[Match]:
+        query = {"sport": sport}
+        if tournament:
+            query["tournament"] = tournament
+        matches_docs = await self.client.find(query)
+        return [Match(**match) for match in matches_docs]
+
     async def upsert_match(self, match: MatchInUpsert) -> Match:
         slug = await self.get_match_slug(match)
         try:
             # Update match
             db_match = await self.get_match_by_slug(slug)
             db_match.feed = match.feed
-            db_match_bets_aux = OrderedDict((bet.slug, bet for bet in db_match.bets))
+            db_match_bets_aux = OrderedDict((bet.slug, bet) for bet in db_match.bets)
             for bet in match.bets:
                 bet_slug = self._bets_repository.get_bet_slug(match, bet)
                 if bet_slug in db_match_bets_aux:

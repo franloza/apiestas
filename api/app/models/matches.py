@@ -36,6 +36,7 @@ class MatchFilterParams(RWModel):
 
 class ManyMatchesInResponse(RWModel):
     matches: List[Match]
+    matches_count : int
 
 
 class MatchInUpsert(MatchBase):

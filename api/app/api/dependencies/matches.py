@@ -6,19 +6,19 @@ from starlette import status
 
 from .database import get_repository
 
-from ..models.domain.matches import Match
-from ..models.schemas.matches import MatchesFilters
 from ...db.errors import EntityDoesNotExist
 from ...db.repositories.matches import MatchesRepository
 from app.resources import strings
+
+from ...models.matches import MatchFilterParams, Match
 
 
 def get_matches_filters(
     commence_day: datetime.date,
     sport: str,
     tournament: Optional[str] = None
-) -> MatchesFilters:
-    return MatchesFilters(
+) -> MatchFilterParams:
+    return MatchFilterParams(
         commence_day=commence_day, sport=sport, tournament=tournament
     )
 
