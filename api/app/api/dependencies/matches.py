@@ -10,7 +10,7 @@ from ...db.errors import EntityDoesNotExist
 from ...db.repositories.matches import MatchesRepository
 from app.resources import strings
 
-from ...models.matches import MatchFilterParams, Match
+from ...models.matches import MatchFilterParams, Match, MatchInDB
 
 
 def get_matches_filters(
@@ -26,7 +26,7 @@ def get_matches_filters(
 async def get_match_by_slug_from_path(
     slug: str = Path(..., min_length=1),
     matches_repo: MatchesRepository = Depends(get_repository(MatchesRepository)),
-) -> Match:
+) -> MatchInDB:
     try:
         return await matches_repo.get_match_by_slug(slug=slug)
     except EntityDoesNotExist:
