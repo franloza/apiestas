@@ -1,7 +1,7 @@
 import datetime
 from typing import List, Optional
 
-from app.models.bets import Bet
+from app.models.bets import Bet, BetInUpsert, BetInDB
 from app.models.common import DateTimeModelMixin
 from app.models.rwmodel import RWModel
 
@@ -18,13 +18,13 @@ class Match(DateTimeModelMixin, MatchBase):
     slug: str
 
 
-class MatchInDB(MatchBase, DateTimeModelMixin):
+class MatchInDB(Match):
+    bets: List[BetInDB]
     feed: str
 
 
 class MatchInResponse(RWModel):
     match: Match
-    bets: List[Bet]
     bets_count: int
 
 
@@ -41,6 +41,7 @@ class ManyMatchesInResponse(RWModel):
 
 class MatchInUpsert(MatchBase):
     feed: str
+    bets: List[BetInUpsert]
 
 
 

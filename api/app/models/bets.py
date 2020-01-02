@@ -14,7 +14,7 @@ class Bet(DateTimeModelMixin, BetBase):
     slug: str
 
 
-class BetInDB(BetBase, DateTimeModelMixin):
+class BetInDB(Bet):
     feed: str
 
 

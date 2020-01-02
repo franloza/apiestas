@@ -2,7 +2,6 @@ version: '3.4'
 services:
   db:
     container_name: "mongo"
-    restart: always
     image: mongo:4
     environment:
       - MONGO_DATA_DIR=/data/db
@@ -14,7 +13,6 @@ services:
     command: mongod --logpath /dev/null
   crawler:
     container_name: crawler
-    restart: always
     build: .
     environment:
       - APP_ENV=dev
@@ -25,7 +23,6 @@ services:
     command: crawler
   api:
     container_name: api
-    restart: always
     build: .
     environment:
       - APP_ENV=dev

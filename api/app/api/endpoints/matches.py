@@ -1,9 +1,12 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Body, Path, HTTPException
+from starlette.status import HTTP_404_NOT_FOUND
 
 from app.api.dependencies.database import get_repository
 from app.api.dependencies.matches import get_matches_filters
+from app.db.errors import EntityDoesNotExist
 from app.db.repositories.matches import MatchesRepository
-from app.models.matches import ManyMatchesInResponse, MatchFilterParams
+from app.resources.strings import MATCH_DOES_NOT_EXIST_ERROR
+from app.models.matches import ManyMatchesInResponse, MatchFilterParams, MatchInResponse, MatchInUpsert, Match
 
 router = APIRouter()
 
@@ -23,8 +26,33 @@ async def list_matches(
     )
     return ManyMatchesInResponse(matches=matches, matches_count=len(matches))
 
-#GET /matches?commence_day=209190902&sport=soccer&tournament=EPL
-#PUT /matches
-#PUT /matches/{match_key}/bet
-#GET /matches/find?commence_time=1535205600&sport=soccer&team_1=Bournemouth&team_2=Everton&similarity=0.9
+@router.get(
+    '/{slug}',
+    response_model=Match,
+    name="matches:get-match"
+)
+async def get_match(
+    slug: str = Path(..., min_length=1),
+    matches_repo : MatchesRepository = Depends(get_repository(MatchesRepository)),
+) -> Match:
+    try:
+        match = await matches_repo.get_match_by_slug(slug=slug)
+    except EntityDoesNotExist:
+        raise HTTPException(
+            status_code=HTTP_404_NOT_FOUND,
+            detail=MATCH_DOES_NOT_EXIST_ERROR,
+        )
+    return Match(**match.dict())
 
+
+@router.put(
+    '/',
+    response_model=MatchInResponse,
+    name="matches:upsert-match"
+)
+async def upsert_matches(
+    match: MatchInUpsert,
+    matches_repo : MatchesRepository = Depends(get_repository(MatchesRepository)),
+) -> MatchInResponse:
+    match = await matches_repo.upsert_match(match=match)
+    return MatchInResponse(match=match, bets_count=len(match.bets))
