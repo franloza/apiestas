@@ -1,7 +1,7 @@
 from typing import Optional
 import datetime
 
-from fastapi import Depends, HTTPException, Path, Query
+from fastapi import Depends, HTTPException, Path
 from starlette import status
 
 from .database import get_repository
@@ -10,16 +10,17 @@ from ...db.errors import EntityDoesNotExist
 from ...db.repositories.matches import MatchesRepository
 from app.resources import strings
 
-from ...models.matches import MatchFilterParams, Match, MatchInDB
+from ...models.matches import MatchFilterParams , MatchInDB
 
 
 def get_matches_filters(
-    commence_day: datetime.date,
     sport: str,
-    tournament: Optional[str] = None
+    commence_day: Optional[datetime.date],
+    tournament: Optional[str] = None,
+    commence_time: Optional[datetime.datetime] = None
 ) -> MatchFilterParams:
     return MatchFilterParams(
-        commence_day=commence_day, sport=sport, tournament=tournament
+        commence_day=commence_day, sport=sport, tournament=tournament, commence_time=commence_time
     )
 
 

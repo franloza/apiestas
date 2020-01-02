@@ -1,17 +1,14 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, Body, Path, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fuzzywuzzy import fuzz
 from slugify import slugify
 from starlette import status
-from starlette.status import HTTP_404_NOT_FOUND
 
 from app.api.dependencies.database import get_repository
 from app.api.dependencies.matches import get_matches_filters, get_match_by_slug_from_path
-from app.db.errors import EntityDoesNotExist
 from app.db.repositories.matches import MatchesRepository
 from app.resources import strings
-from app.resources.strings import MATCH_DOES_NOT_EXIST_ERROR
 from app.models.matches import ManyMatchesInResponse, MatchFilterParams, MatchInResponse, MatchInUpsert, Match
 
 router = APIRouter()
@@ -26,6 +23,16 @@ async def list_matches(
     matches_filters: MatchFilterParams = Depends(get_matches_filters),
     matches_repo : MatchesRepository = Depends(get_repository(MatchesRepository)),
 ) -> ManyMatchesInResponse:
+    """
+    Get a list of matches that fulfil the specified filtering criteria
+
+    - **commence_day**: Date of commence of the match. If **commence_time** is not specified, it sets
+    today as default.
+    - **commence_time**: Datetime of commence of the match (UTC). It process either a unix timestamp int
+    (e.g. 1496498400) or a string representing the date & time.
+    - **sport**: Name of the sport
+    - **tournament**: Name of the tournament
+    """
     matches = await matches_repo.filter_matches(commence_day=matches_filters.commence_day,
                                                 commence_time=matches_filters.commence_time,
                                                 sport=matches_filters.sport,
@@ -36,14 +43,30 @@ async def list_matches(
 @router.get(
     '/find',
     response_model=Match,
-    name="matches:find-matches"
+    name="matches:find-matches",
+    responses={404: {"description": "Any match has a similarity higher than the given threshold"}}
 )
 async def find_match(
-    teams: List[str] = Query(...),
+    teams: List[str] = Query(..., min_items=2),
     matches_filters: MatchFilterParams = Depends(get_matches_filters),
     similarity: int = Query(70, min=0, max=100),
     matches_repo: MatchesRepository = Depends(get_repository(MatchesRepository)),
 ) -> Match:
+    """
+    Do a fuzzy search using team names to find a match. We recommend to specify as filters as possible (e.g. specific
+    commence time) to speed up retrieval process and avoid retrieving more than one match. It uses Partial Ratio
+    between two slugs obtained from team names.
+
+    - **teams**: Name of the teams that participate in the match.
+    - **commence_day**: Date of commence of the match. If **commence_time** is not specified, it sets
+    today as default.
+    - **commence_time**: Datetime of commence of the match (UTC). It process either a unix timestamp int
+    (e.g. 1496498400) or a string representing the date & time.
+    - **sport**: Name of the sport
+    - **tournament**: Name of the tournament
+    - **similarity**: Similarity threshold. Value ranges from 0 to 100 and it means the minimum amount of similarity
+    with the match teams. By default, the threshold is 70
+    """
     matches = await matches_repo.filter_matches(commence_day=matches_filters.commence_day,
                                                 commence_time=matches_filters.commence_time,
                                                 sport=matches_filters.sport,

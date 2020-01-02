@@ -1,7 +1,7 @@
 import datetime
 from typing import List, Optional
 
-from pydantic import validator
+from pydantic import validator, Field
 
 from app.models.bets import Bet, BetInUpsert, BetInDB
 from app.models.common import DateTimeModelMixin
@@ -9,15 +9,16 @@ from app.models.rwmodel import RWModel
 
 
 class MatchBase(RWModel):
-    sport: str
-    tournament: str
-    teams: List[str]
+    sport: str = Field(..., example="football")
+    tournament: str  = Field(..., example="Premier League")
+    teams: List[str] = Field(..., description="In two-team sports, the first element correspond to the home team",
+                             example=["Brighton", "Bournemouth"], min_items=2)
     commence_time: datetime.datetime
     bets: List[Bet]
 
 
 class Match(DateTimeModelMixin, MatchBase):
-    slug: str
+    slug: str = Field(..., example="brighton-bournemouth-football-premier-league-1577536200")
 
 
 class MatchInDB(Match):
@@ -31,7 +32,7 @@ class MatchInResponse(RWModel):
 
 
 class MatchFilterParams(RWModel):
-    commence_day: datetime.date = None
+    commence_day: Optional[datetime.date] = None
     commence_time: Optional[datetime.datetime]
     sport: str
     tournament: Optional[str]
