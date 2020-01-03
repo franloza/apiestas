@@ -6,7 +6,7 @@ import re
 import scrapy
 import dateparser
 
-from crawling.items import Match, Result, Bet, Sports, Bookmakers
+from crawling.items import Match, Bet, Sports, Bookmakers
 
 class CodereSpider(scrapy.Spider):
 
@@ -49,8 +49,7 @@ class CodereSpider(scrapy.Spider):
                     bet["feed"] = self.name
                     bet['date_extracted'] = dt.now()
                     bet["url"] = response.url
-                    bet["results"] = [Result(name="1", odds= results[0]['Odd']),
-                                      Result(name="2", odds=results[1]['Odd'])]
+                    bet["odds"] = {"1": results[0]['Odd'], "2": results[1]['Odd']}
                     match_item["bets"] = [bet]
                     match_item['sport'] = self.SPORTS_MAP[match['SportHandle']].value
                     match_item['tournament'] = match['LeagueName']

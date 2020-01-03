@@ -4,7 +4,7 @@ from datetime import timedelta as td
 import scrapy
 import dateparser
 
-from crawling.items import Match, Result
+from crawling.items import Match
 from crawling.utils.utils import extract_with_css
 
 #TODO: Adapt it to merge with elcomparador data
@@ -34,14 +34,13 @@ class MarcaApuestasSpider(scrapy.Spider):
     def parse_matches(self, response):
         for match in response.css('table.coupon tbody tr'):
             match_item = Match()
-            match_item['results'] = []
+            match_item['odds'] = {}
             for i, player in enumerate(match.css("td.seln")):
                 try:
                     match_item['team_{}'.format(i + 1)] = extract_with_css(player, "span.seln-name::text")
                 except KeyError:
                     break
-                result_item = Result(name=str(i+1), odd=float(extract_with_css(player, "span.price.dec::text")))
-                match_item['results'].append(dict(result_item))
+                match_item['odds'][str(i+1)] = float(extract_with_css(player, "span.price.dec::text"))
                 
             match_item['url'] = response.url
             match_item['date_extracted'] = dt.now()

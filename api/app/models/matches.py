@@ -51,7 +51,7 @@ class ManyMatchesInResponse(RWModel):
 
 class MatchInUpsert(MatchBase):
     feed: str
-    bets: List[BetInUpsert]
+    bets: Optional[List[BetInUpsert]] = []
 
 
 
