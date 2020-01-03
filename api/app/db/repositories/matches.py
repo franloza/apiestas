@@ -8,8 +8,9 @@ from slugify import slugify
 
 from app.db.errors import EntityDoesNotExist
 from app.db.repositories.base import BaseRepository
+from app.db.repositories.bets import BetsRepository
 
-from app.models.bets import BetBase, BetInDB
+from app.models.bets import BetInDB
 from app.models.matches import Match, MatchInUpsert, MatchBase, MatchInDB
 
 
@@ -17,6 +18,7 @@ class MatchesRepository(BaseRepository):
     def __init__(self, client: AsyncIOMotorDatabase) -> None:
         super().__init__(client)
         self._client = self._client["matches"]
+        self._bets_repository = BetsRepository(client)
 
     async def get_match_by_slug(self, slug: str) -> MatchInDB:
         doc = await self.client.find_one({"slug": slug})
@@ -46,7 +48,7 @@ class MatchesRepository(BaseRepository):
             db_match.feed = match.feed
             db_match_bets_aux = OrderedDict((bet.slug, bet) for bet in db_match.bets)
             for bet in match.bets:
-                bet_slug = self._get_bet_slug(match, bet)
+                bet_slug = self._bets_repository.get_bet_slug(match, bet)
                 if bet_slug in db_match_bets_aux:
                     db_match_bets_aux[bet_slug].odds = bet.odds
                     db_match_bets_aux[bet_slug].url = bet.url
@@ -61,7 +63,7 @@ class MatchesRepository(BaseRepository):
             # Create Match
             match_dict = match.dict()
             for idx, bet in enumerate(match.bets):
-                match_dict["bets"][idx]["slug"] = self._get_bet_slug(match, bet)
+                match_dict["bets"][idx]["slug"] = self._bets_repository.get_bet_slug(match, bet)
             match_dict["slug"] = slug
             self.client.insert_one(MatchInDB(**match_dict).dict())
         return Match(**match_dict)
@@ -71,11 +73,5 @@ class MatchesRepository(BaseRepository):
         return slugify(
             ','.join(match.teams + list(map(str, (match.sport, match.tournament,
                                                   int(mktime(match.commence_time.timetuple())))))))
-
-    @staticmethod
-    def _get_bet_slug(match: MatchBase, bet: BetBase) -> str:
-        return slugify(','.join
-                       (match.teams + list(map(str, (match.sport, match.tournament,
-                                                     int(mktime(match.commence_time.timetuple())), bet.bookmaker)))))
 
 

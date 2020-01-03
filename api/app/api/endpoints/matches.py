@@ -7,9 +7,12 @@ from starlette import status
 
 from app.api.dependencies.database import get_repository
 from app.api.dependencies.matches import get_matches_filters, get_match_by_slug_from_path
+from app.db.repositories.bets import BetsRepository
 from app.db.repositories.matches import MatchesRepository
+from app.models.bets import Bet, BetInUpsert
 from app.resources import strings
-from app.models.matches import ManyMatchesInResponse, MatchFilterParams, MatchInResponse, MatchInUpsert, Match
+from app.models.matches import ManyMatchesInResponse, MatchFilterParams, MatchInResponse, MatchInUpsert, Match, \
+    MatchInDB
 
 router = APIRouter()
 
@@ -117,3 +120,17 @@ async def upsert_matches(
 ) -> MatchInResponse:
     match = await matches_repo.upsert_match(match=match)
     return MatchInResponse(match=match, bets_count=len(match.bets))
+
+
+@router.put(
+    '/{slug}/bets',
+    response_model=Bet,
+    name="bets:upsert-bet"
+)
+async def upsert_bet(
+        bet: BetInUpsert,
+        match: MatchInDB = Depends(get_match_by_slug_from_path),
+        bets_repo:  BetsRepository = Depends(get_repository(BetsRepository)),
+) -> Bet:
+    bet = await bets_repo.upsert_bet(match=match, bet=bet)
+    return bet

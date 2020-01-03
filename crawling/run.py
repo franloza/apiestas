@@ -39,8 +39,8 @@ def crawl(process, spider):
 
 def run():
     process = CrawlerProcess(get_project_settings())
-    crawl(process, ElComparadorSpider)
-    #crawl(process, CodereSpider)
+    #crawl(process, ElComparadorSpider)
+    crawl(process, CodereSpider)
     process.start()
 
 
