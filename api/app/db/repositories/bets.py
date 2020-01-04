@@ -24,28 +24,24 @@ class BetsRepository(BaseRepository):
             raise EntityDoesNotExist("bet with slug {0} does not exist".format(slug))
 
     async def upsert_bet(self, match: MatchInDB, bet: BetInUpsert) -> Bet:
-        bets = list(map(lambda x: x.dict(), match.bets))
-        slug = self.get_bet_slug(match, bet)
-        db_bet, db_bet_idx = None, -1
-        for idx, match_bet in enumerate(match.bets):
-            if match_bet.slug == slug:
-                db_bet = match_bet
-                db_bet_idx = idx
-        if db_bet:
+        match_bets_aux = {match_bet.slug: match_bet for match_bet in match.bets}
+        bet_slug = self.get_bet_slug(match, bet)
+        if bet_slug in match_bets_aux:
             # Update bet
-            db_bet.url = bet.url
-            db_bet.odds = bet.odds
-            db_bet.updated_at = datetime.utcnow().replace(microsecond=0)
+            db_bet = BetInDB(**bet.dict(), slug=bet_slug, created_at=match_bets_aux[bet_slug].created_at)
             db_bet_dict = db_bet.dict()
-            bets[db_bet_idx] = db_bet_dict
+            self.client.update_one(
+                {'slug': match.slug, 'bets.slug': bet_slug},
+                {'$set': {'bets.$': db_bet_dict}}
+            )
         else:
             # Insert bet
-            db_dict = bet.dict()
-            db_dict["slug"] = slug
-            db_bet = BetInDB(**db_dict)
+            db_bet = BetInDB(**bet.dict(), slug=bet_slug)
             db_bet_dict = db_bet.dict()
-            bets.append(db_bet_dict)
-        await self.client.update_one({'slug': match.slug}, {'$set': {'bets': bets}})
+            self.client.update_one(
+                {'slug': match.slug},
+                {'$push': {'bets': db_bet_dict}}
+            )
         return Bet(**db_bet_dict)
 
     @staticmethod
