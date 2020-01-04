@@ -48,7 +48,7 @@ class ApiestasPipeline(object):
         spider = kwargs['spider']
         slug = json.loads(response.body)['slug']
         bet = self.get_apiestas_bets(item['bets'])[0]
-        req = Request(f"self.api_endpoint{slug}/bets", callback=self.upset_success_callback, method='PUT',
+        req = Request(f"{self.api_endpoint}{slug}/bets", callback=self.upset_success_callback, method='PUT',
                       body=json.dumps(bet), meta={'item': item}, errback=self.upsert_match_error_callback)
         self.crawler.engine.crawl(req, spider)
 
@@ -56,7 +56,9 @@ class ApiestasPipeline(object):
         spider = failure.request.cb_kwargs['spider']
         item = failure.request.meta['item']
         if failure.value.response.status == 404:
-            self.upsert_match(spider, item)
+            pass
+            # We need a better authority than elcomparador
+            #self.upsert_match(spider, item)
         elif failure.value.response.status == 422:
             new_similarity = failure.request.cb_kwargs['query'][-1][1] + 10
             if new_similarity  <= 100:

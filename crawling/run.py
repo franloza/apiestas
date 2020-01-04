@@ -10,10 +10,11 @@ from scrapy.utils.project import get_project_settings
 from twisted.internet import reactor
 from twisted.internet.task import deferLater
 
-from .spiders.elcomparador import ElComparadorSpider
-from .spiders.codere import CodereSpider
+from crawling.spiders.elcomparador import ElComparadorSpider
+from crawling.spiders.codere import CodereSpider
 
 CRAWLING_INTERVAL = os.getenv('CRAWLING_INTERVAL', 300)
+CRAWLERS = [ElComparadorSpider, CodereSpider]
 
 
 def sleep(self, *args, seconds):
@@ -25,7 +26,7 @@ def crash(failure):
     logging.error(failure.getTraceback())
 
 
-def crawl(process, spider):
+def start_in_parallel(process: CrawlerProcess, crawlers: list):
     def _crawl(result, spider):
         deferred = process.crawl(spider)
         deferred.addCallback(lambda results:
@@ -34,13 +35,31 @@ def crawl(process, spider):
         deferred.addCallback(sleep, seconds=CRAWLING_INTERVAL)
         deferred.addCallback(_crawl, spider)
         return deferred
-    _crawl(None, spider)
 
-
-def run():
     process = CrawlerProcess(get_project_settings())
-    #crawl(process, ElComparadorSpider)
-    crawl(process, CodereSpider)
+    for crawler in crawlers:
+        _crawl(None, crawler)
     process.start()
 
 
+def start_sequentially(process: CrawlerProcess, crawlers: list):
+    print('Starting crawler {}'.format(crawlers[0].__name__))
+    deferred = process.crawl(crawlers[0])
+    deferred.addErrback(crash)
+    if len(crawlers) > 1:
+        deferred.addCallback(lambda _: start_sequentially(process, crawlers[1:]))
+    else:
+        deferred.addCallback(lambda results:
+                             logging.info(f"Waiting {CRAWLING_INTERVAL} seconds to start a new crawling process"))
+        deferred.addCallback(sleep, seconds=CRAWLING_INTERVAL)
+        deferred.addCallback(lambda _: start_sequentially(process, CRAWLERS))
+
+
+def main():
+    process = CrawlerProcess(settings=get_project_settings())
+    start_sequentially(process, CRAWLERS)
+    process.start()
+
+
+if __name__ == '__main__':
+    main()
