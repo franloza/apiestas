@@ -15,7 +15,7 @@ This project has followed code examples from *RealWorld apps*, specifically the 
 
 * `FastAPI RealWorld App <https://github.com/nsidnev/fastapi-realworld-example-app/>`_
 * `FastAPI MongoDB RealWorld App <https://github.com/markqiu/fastapi-mongodb-realworld-example-app/>`_ (A fork of the previous)
-* `Full Stack FastAPI PostgreSQL <https://github.com/tiangolo/full-stack-fastapi-postgresql/>`_ (A fork of the previous)
+* `Full Stack FastAPI PostgreSQL <https://github.com/tiangolo/full-stack-fastapi-postgresql/>`_
 
 
 The crawler inserts and updates data from the MongoDB database by using the Apiestas REST API and the data is exposed through this API.
@@ -47,7 +47,7 @@ Then create ``.env`` file (or rename and modify ``.env.example``) in ``api`` or 
 
 To run the web application in debug use::
 
-    uvicorn app.main:app --reload
+    python main.py api --reload
 
 
 Development with Docker
