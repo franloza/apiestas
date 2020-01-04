@@ -15,7 +15,7 @@ from ...models.matches import MatchFilterParams , MatchInDB
 
 def get_matches_filters(
     sport: str,
-    commence_day: Optional[datetime.date],
+    commence_day: Optional[datetime.date] = datetime.datetime.utcnow().date(),
     tournament: Optional[str] = None,
     commence_time: Optional[datetime.datetime] = None
 ) -> MatchFilterParams:

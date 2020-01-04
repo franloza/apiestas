@@ -37,7 +37,6 @@ class CodereSpider(scrapy.Spider):
     def parse_matches(self, response):
         matches = json.loads(response.body_as_unicode())
         for match in matches:
-            match_item = Match()
             for game in match['Games']:
                 if game['Name'].lower() == 'ganador del partido':
                     results = game['Results']

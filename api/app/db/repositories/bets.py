@@ -8,7 +8,7 @@ from app.db.errors import EntityDoesNotExist
 from app.db.repositories.base import BaseRepository
 
 from app.models.bets import BetBase, BetInDB, BetInUpsert, Bet
-from app.models.matches import Match, MatchInDB, MatchBase
+from app.models.matches import MatchInDB, MatchBase
 
 
 class BetsRepository(BaseRepository):

@@ -33,15 +33,9 @@ class MatchInResponse(RWModel):
 
 class MatchFilterParams(RWModel):
     commence_day: Optional[datetime.date] = None
-    commence_time: Optional[datetime.datetime]
+    commence_time: Optional[datetime.datetime] = None
     sport: str
     tournament: Optional[str]
-
-    @validator("commence_day", pre=True, always=True)
-    def default_datetime(
-        cls, value: datetime.date  # noqa: N805, WPS110
-    ) -> datetime.date:
-        return value or datetime.datetime.utcnow().date()
 
 
 class ManyMatchesInResponse(RWModel):

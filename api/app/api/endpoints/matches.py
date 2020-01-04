@@ -114,7 +114,7 @@ async def get_match(match = Depends(get_match_by_slug_from_path)) -> Match:
     response_model=MatchInResponse,
     name="matches:upsert-match"
 )
-async def upsert_matches(
+async def upsert_match(
     match: MatchInUpsert,
     matches_repo : MatchesRepository = Depends(get_repository(MatchesRepository)),
 ) -> MatchInResponse:
