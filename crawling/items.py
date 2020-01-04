@@ -12,12 +12,9 @@ class Bet(scrapy.Item):
     bookmaker = scrapy.Field()
     feed = scrapy.Field()
     date_extracted = scrapy.Field()
-    results = scrapy.Field()
+    odds = scrapy.Field()
     url = scrapy.Field()
 
-class Result(scrapy.Item):
-    name = scrapy.Field()
-    odds = scrapy.Field()
 
 class Match(scrapy.Item):
     _id = scrapy.Field()
@@ -47,8 +44,8 @@ class Bookmakers(Enum):
     SPORT888 = "888 Sport"
     SPORTIUM = "Sportium"
     CODERE = "Codere"
-    MARATHON_BET = "Marathon Bet",
-    BETWAY = "Betway",
+    MARATHON_BET = "Marathon Bet"
+    BETWAY = "Betway"
     RETABET= "RETAbet"
     LEOVEGAS="LeoVegas"
 

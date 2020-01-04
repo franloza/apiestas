@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from datetime import datetime as dt
 from datetime import timedelta as td
 from urllib import parse
@@ -5,7 +6,7 @@ import re
 
 import scrapy
 
-from crawling.items import Match, Result, Bet, Sports, Bookmakers
+from crawling.items import Match, Bet, Sports, Bookmakers
 from crawling.utils.utils import extract_with_css
 
 
@@ -111,11 +112,9 @@ class ElComparadorSpider(scrapy.Spider):
                                     if bookmakers[idx].value not in bets:
                                         bets[bookmakers[idx].value] = Bet(
                                             {'bookmaker': bookmakers[idx].value,
-                                             'url': url, 'feed': self.name, 'results': [],
+                                             'url': url, 'feed': self.name, 'odds': OrderedDict(),
                                              'date_extracted': dt.now()})
-                                    bets[bookmakers[idx].value]["results"].append(
-                                        Result({"name": result_name, "odds": odds})
-                                    )
+                                    bets[bookmakers[idx].value]["odds"][result_name] = odds
                         else:
                             break
                     match_item["bets"] = list(bets.values())                          

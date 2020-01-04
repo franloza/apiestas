@@ -2,7 +2,6 @@ version: '3.4'
 services:
   db:
     container_name: "mongo"
-    restart: always
     image: mongo:4
     environment:
       - MONGO_DATA_DIR=/data/db
@@ -14,25 +13,20 @@ services:
     command: mongod --logpath /dev/null
   crawler:
     container_name: crawler
-    restart: always
     build: .
     environment:
-      - APP_ENV=dev
-      - MONGO_HOST=db
-      - MONGO_PORT=27017
+      - APIESTAS_API_URL=api:8000
     depends_on:
-      - db
+      - api
     command: crawler
   api:
     container_name: api
-    restart: always
     build: .
     environment:
-      - APP_ENV=dev
-      - MONGO_HOST=db
-      - MONGO_PORT=27017
+      - DB_CONNECTION=mongodb://db:27017
+      - DEBUG=true
     ports:
-      - 5000:5000
+      - 8000:8000
     depends_on:
       - db
     command: api

@@ -4,7 +4,7 @@ from datetime import timedelta as td
 import scrapy
 import dateparser
 
-from crawling.items import Match, Result
+from crawling.items import Match
 from crawling.utils.utils import extract_with_css
 
 # TODO: Adapt it to new item structure
@@ -29,13 +29,9 @@ class SportiumSpider(scrapy.Spider):
     def parse_matches(self, response):
         for match in response.css('table.coupon tbody tr'):
             match_item = Match()
+            match_item['odds'] = {}
             for i, player in enumerate(match.css("td.seln")):
-                result_item = Result(name=extract_with_css(player, "span.seln-name::text"),
-                                     odd=float(extract_with_css(player, "span.price.dec::text")))
-                try:
-                    match_item['result_{}'.format(i + 1)] = result_item
-                except KeyError:
-                    break
+                match_item['odds'][extract_with_css(player, "span.seln-name::text")] = float(extract_with_css(player, "span.price.dec::text"))
             match_item['url'] = response.url
             match_item['date_extracted'] = dt.now()
             match_item['feed'] = self.name
