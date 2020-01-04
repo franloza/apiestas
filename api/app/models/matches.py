@@ -1,11 +1,11 @@
 import datetime
 from typing import List, Optional
 
-from pydantic import validator, Field
+from pydantic import Field
 
-from app.models.bets import Bet, BetInUpsert, BetInDB
-from app.models.common import DateTimeModelMixin
-from app.models.rwmodel import RWModel
+from .bets import Bet, BetInUpsert, BetInDB
+from .common import DateTimeModelMixin
+from .rwmodel import RWModel
 
 
 class MatchBase(RWModel):

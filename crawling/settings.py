@@ -103,6 +103,5 @@ ITEM_PIPELINES = {
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 # Configure API REST
-APIESTAS_API_HOST = os.environ.get('APIESTAS_API_HOST', 'localhost')
-APIESTAS_API_PORT = os.environ.get('APIESTAS_API_HOST', 8000)
+APIESTAS_API_URL = os.environ['APIESTAS_API_URL']
 APIESTAS_FIND_SIMILARITY_THRESHOLD = 80

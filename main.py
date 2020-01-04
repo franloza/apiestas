@@ -1,17 +1,21 @@
+"""CLI of the application"""
+
 import typer
+
+from api.run_server import run_server
 
 app = typer.Typer()
 
+
 @app.command()
-def api(port: int = 5000):
-    from api.run import run as run_api
-    run_api(port)
+def api(port: int = 8000):
+    run_server(app="api.app.asgi:app", host="0.0.0.0", port=port, reload=True, log_level="info")
 
 
 @app.command()
 def crawler():
-    from crawling.run import run as run_crawler
-    run_crawler()
+    from crawling.run import start_process
+    start_process()
 
 
 if __name__ == "__main__":

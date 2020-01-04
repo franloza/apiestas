@@ -6,8 +6,8 @@ from starlette.requests import Request
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from app.core import config
-from app.db.repositories.base import BaseRepository
+from ...core import config
+from ...db.repositories.base import BaseRepository
 
 
 def _get_db_client(request: Request) -> AsyncIOMotorClient:

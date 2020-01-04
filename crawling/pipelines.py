@@ -15,7 +15,7 @@ class ApiestasPipeline(object):
 
     def __init__(self, crawler):
         self.crawler = crawler
-        self.api_endpoint = f"http://{st.APIESTAS_API_HOST}:{st.APIESTAS_API_PORT}/api/matches/"
+        self.api_endpoint = f"http://{st.APIESTAS_API_URL}/api/matches/"
         self.date_tz = pytz.timezone("Europe/Madrid")
 
     @classmethod

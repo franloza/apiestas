@@ -1,14 +1,13 @@
-import uvicorn
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException
 from starlette.middleware.cors import CORSMiddleware
 
-from app.api.errors.http_error import http_error_handler
-from app.api.errors.validation_error import http422_error_handler
-from app.api.api import router as api_router
-from app.core.config import ALLOWED_HOSTS, API_PREFIX, DEBUG, PROJECT_NAME, VERSION
-from app.core.events import create_start_app_handler, create_stop_app_handler
+from .api.errors.http_error import http_error_handler
+from .api.errors.validation_error import http422_error_handler
+from .api.api import router as api_router
+from .core.config import ALLOWED_HOSTS, API_PREFIX, DEBUG, PROJECT_NAME, VERSION
+from .core.events import create_start_app_handler, create_stop_app_handler
 
 
 def get_application() -> FastAPI:
@@ -31,9 +30,3 @@ def get_application() -> FastAPI:
     application.include_router(api_router, prefix=API_PREFIX)
 
     return application
-
-
-app = get_application()
-
-if __name__ == '__main__':
-    uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -5,14 +5,14 @@ from fuzzywuzzy import fuzz
 from slugify import slugify
 from starlette import status
 
-from app.api.dependencies.database import get_repository
-from app.api.dependencies.matches import get_matches_filters, get_match_by_slug_from_path
-from app.db.repositories.bets import BetsRepository
-from app.db.repositories.matches import MatchesRepository
-from app.models.bets import Bet, BetInUpsert
-from app.resources import strings
-from app.models.matches import ManyMatchesInResponse, MatchFilterParams, MatchInResponse, MatchInUpsert, Match, \
-    MatchInDB
+from ...api.dependencies.database import get_repository
+from ...api.dependencies.matches import get_matches_filters, get_match_by_slug_from_path
+from ...db.repositories.bets import BetsRepository
+from ...db.repositories.matches import MatchesRepository
+from ...models.bets import Bet, BetInUpsert
+from ...resources import strings
+from ...models.matches import (
+    ManyMatchesInResponse, MatchFilterParams, MatchInResponse, MatchInUpsert, Match, MatchInDB)
 
 router = APIRouter()
 

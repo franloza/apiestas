@@ -55,11 +55,14 @@ def start_sequentially(process: CrawlerProcess, crawlers: list):
         deferred.addCallback(lambda _: start_sequentially(process, CRAWLERS))
 
 
-def main():
+def start_process(parallel=False):
     process = CrawlerProcess(settings=get_project_settings())
-    start_sequentially(process, CRAWLERS)
+    if parallel:
+        start_in_parallel(process, CRAWLERS)
+    else:
+        start_sequentially(process, CRAWLERS)
     process.start()
 
 
 if __name__ == '__main__':
-    main()
+    start_process()

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.bets import get_bet_by_slug_from_path
-from app.models.bets import Bet
+from ...api.dependencies.bets import get_bet_by_slug_from_path
+from ...models.bets import Bet
 
 router = APIRouter()
 

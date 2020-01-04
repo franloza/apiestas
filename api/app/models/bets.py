@@ -2,8 +2,8 @@ from typing import List, Optional
 
 from pydantic import Field
 
-from app.models.common import DateTimeModelMixin
-from app.models.rwmodel import RWModel
+from .common import DateTimeModelMixin
+from .rwmodel import RWModel
 
 
 class BetBase(RWModel):

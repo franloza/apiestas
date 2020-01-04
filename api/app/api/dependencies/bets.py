@@ -1,6 +1,3 @@
-from typing import Optional
-import datetime
-
 from fastapi import Depends, HTTPException, Path
 from starlette import status
 
@@ -8,7 +5,7 @@ from .database import get_repository
 
 from ...db.errors import EntityDoesNotExist
 from ...db.repositories.bets import BetsRepository
-from app.resources import strings
+from ...resources import strings
 
 from ...models.bets import BetInDB
 

@@ -6,12 +6,12 @@ from typing import List
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from slugify import slugify
 
-from app.db.errors import EntityDoesNotExist
-from app.db.repositories.base import BaseRepository
-from app.db.repositories.bets import BetsRepository
+from ...db.errors import EntityDoesNotExist
+from ...db.repositories.base import BaseRepository
+from ...db.repositories.bets import BetsRepository
 
-from app.models.bets import BetInDB
-from app.models.matches import Match, MatchInUpsert, MatchBase, MatchInDB
+from ...models.bets import BetInDB
+from ...models.matches import Match, MatchInUpsert, MatchBase, MatchInDB
 
 
 class MatchesRepository(BaseRepository):

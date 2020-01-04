@@ -8,7 +8,7 @@ from .database import get_repository
 
 from ...db.errors import EntityDoesNotExist
 from ...db.repositories.matches import MatchesRepository
-from app.resources import strings
+from ...resources import strings
 
 from ...models.matches import MatchFilterParams , MatchInDB
 
