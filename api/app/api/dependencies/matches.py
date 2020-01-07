@@ -9,12 +9,12 @@ from .database import get_repository
 from ...db.errors import EntityDoesNotExist
 from ...db.repositories.matches import MatchesRepository
 from ...resources import strings
-
 from ...models.matches import MatchFilterParams , MatchInDB
+from ...models.enums import Sport
 
 
 def get_matches_filters(
-    sport: str,
+    sport: Sport,
     commence_day: Optional[datetime.date] = datetime.datetime.utcnow().date(),
     tournament: Optional[str] = None,
     commence_time: Optional[datetime.datetime] = None

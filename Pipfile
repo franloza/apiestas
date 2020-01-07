@@ -16,6 +16,7 @@ loguru = "*"
 python-slugify = "~=4.0"
 async-exit-stack = "*"
 async-generator = "*"
+js2xml = "*"
 
 [dev-packages]
 pylint = "*"

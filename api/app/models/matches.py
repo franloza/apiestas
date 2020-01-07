@@ -5,11 +5,12 @@ from pydantic import Field
 
 from .bets import Bet, BetInUpsert, BetInDB
 from .common import DateTimeModelMixin
+from .enums import Sport
 from .rwmodel import RWModel
 
 
 class MatchBase(RWModel):
-    sport: str = Field(..., example="football")
+    sport: Sport = Field(..., example="football")
     tournament: str  = Field(..., example="Premier League")
     teams: List[str] = Field(..., description="In two-team sports, the first element correspond to the home team",
                              example=["Brighton", "Bournemouth"], min_items=2)
@@ -34,7 +35,7 @@ class MatchInResponse(RWModel):
 class MatchFilterParams(RWModel):
     commence_day: Optional[datetime.date] = None
     commence_time: Optional[datetime.datetime] = None
-    sport: str
+    sport: Sport
     tournament: Optional[str]
 
 
