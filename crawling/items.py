@@ -11,12 +11,14 @@ from enum import Enum
 
 class Bet(scrapy.Item):
     bookmaker = scrapy.Field()
+    bookmaker_nice = scrapy.Field()
     feed = scrapy.Field()
     date_extracted = scrapy.Field()
     bet_type = scrapy.Field()
-    bet_subtype = scrapy.Field()
+    bet_scope = scrapy.Field()
     odds = scrapy.Field()
     url = scrapy.Field()
+    is_back = scrapy.Field()
 
 
 class Match(scrapy.Item):
