@@ -46,7 +46,7 @@ ROBOTSTXT_OBEY = True
 COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
-#TELNETCONSOLE_ENABLED = False
+TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
 #DEFAULT_REQUEST_HEADERS = {
@@ -71,9 +71,12 @@ COOKIES_ENABLED = False
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
-#EXTENSIONS = {
-#    'scrapy.extensions.telnet.TelnetConsole': None,
-#}
+EXTENSIONS = {
+   'scrapy.extensions.corestats.CoreStats': None,
+   'scrapy.extensions.closespider.CloseSpider': None,
+   'scrapy.extensions.memusage.MemoryUsage': None,
+   'scrapy.extensions.logstats.LogStats': None
+}
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html

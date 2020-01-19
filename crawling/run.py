@@ -10,11 +10,10 @@ from scrapy.utils.project import get_project_settings
 from twisted.internet import reactor
 from twisted.internet.task import deferLater
 
-from crawling.spiders.elcomparador import ElComparadorSpider
-from crawling.spiders.codere import CodereSpider
+from crawling.spiders import ElComparadorSpider, CodereSpider, OddsPortalSpider
 
 CRAWLING_INTERVAL = os.getenv('CRAWLING_INTERVAL', 300)
-CRAWLERS = [ElComparadorSpider, CodereSpider]
+CRAWLERS = [OddsPortalSpider]
 
 
 def sleep(self, *args, seconds):

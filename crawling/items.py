@@ -27,8 +27,9 @@ class Match(scrapy.Item):
     sport = scrapy.Field()
     tournament = scrapy.Field()
     tournament_nice = scrapy.Field()
-    country =  scrapy.Field()
+    country = scrapy.Field()
     bets = scrapy.Field()
+    url = scrapy.Field()
 
 
 class Sports(Enum):
