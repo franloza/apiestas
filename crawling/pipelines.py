@@ -23,7 +23,7 @@ class ApiestasPipeline(object):
         return cls(crawler)
 
     def process_item(self, item, spider):
-        if spider.name == "elcomparador":
+        if spider.name == "oddsportal":
             self.upsert_match(spider, item)
         else:
             if item['bets']:
@@ -34,8 +34,8 @@ class ApiestasPipeline(object):
         query = (
             ("commence_time", self._get_apiestas_datetime(item['date'])),
             ("sport", self.get_sport_code(item["sport"])),
-            ("teams", item["team_1"]),
-            ("teams", item["team_2"]),
+            ("teams", item["teams"][0]),
+            ("teams", item["teams"][1]),
             ("similarity", similarity)
         )
         req = Request(f"{self.api_endpoint}find?{urlencode(query)}", callback=self.upsert_bet, method='GET',
@@ -83,35 +83,32 @@ class ApiestasPipeline(object):
     def get_apiestas_match(self, spider, item: dict):
         match = {
             'tournament': item['tournament'],
-            'commence_time': self._get_apiestas_datetime(item['date']),
-            "teams": [item['team_1'], item['team_2']],
+            'tournament_nice': item['tournament_nice'],
+            'url': item['url'],
+            'commence_time': self._get_apiestas_datetime(item['commence_time'])
+                             if type(item['commence_time']) == str else item['commence_time'],
+            "teams": item['teams'],
             "sport": self.get_sport_code(item["sport"]),
             "feed": spider.name,
+            "bets": self.get_apiestas_bets(item.get("bets", []))
         }
-        if item["bets"]:
-            match['bets'] = self.get_apiestas_bets(item["bets"])
         return match
 
     def get_apiestas_bets(self, item_bets:list) -> list:
         bets = []
         for bet in item_bets:
-            bet_dict = {
-                    "bookmaker": bet["bookmaker"],
-                    "url": bet["url"],
-                    "feed": bet["feed"]
-                }
-            bet_odds = dict(bet['odds'])
-            if len(bet_odds) == 3 and 'X' in bet_odds:
-                # There is a draw. Append at the end
-                draw_odds = bet_odds.pop('X')
-                odds = list(bet_odds.values())
-                odds.append(draw_odds)
-            elif len(bet_odds) >= 2:
-                odds = list(bet_odds.values())
-            else:
-                continue
-            bet_dict['odds'] = odds
-            bets.append(bet_dict)
+            if len(bet["odds"]) > 1:
+                bet_dict = {
+                        "bookmaker": bet["bookmaker"],
+                        "bookmaker_nice": bet["bookmaker_nice"],
+                        "is_back": bet["is_back"],
+                        "bet_type": bet["bet_type"],
+                        "bet_scope": bet["bet_scope"],
+                        "url": bet["url"],
+                        "feed": bet["feed"],
+                        "odds": bet["odds"]
+                    }
+                bets.append(bet_dict)
         return bets
 
     def _get_apiestas_datetime(self, date: datetime, as_unix=False) -> Union[str, int]:

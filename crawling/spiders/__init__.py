@@ -6,3 +6,5 @@ from .codere import CodereSpider
 from .luckia import LuckiaSpider
 from .marcaapuestas import MarcaApuestasSpider
 from .sportium import SportiumSpider
+from .elcomparador import ElComparadorSpider
+from .oddsportal import OddsPortalSpider

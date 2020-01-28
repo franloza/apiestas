@@ -8,22 +8,29 @@
 import scrapy
 from enum import Enum
 
+
 class Bet(scrapy.Item):
     bookmaker = scrapy.Field()
+    bookmaker_nice = scrapy.Field()
     feed = scrapy.Field()
     date_extracted = scrapy.Field()
+    bet_type = scrapy.Field()
+    bet_scope = scrapy.Field()
     odds = scrapy.Field()
     url = scrapy.Field()
+    is_back = scrapy.Field()
 
 
 class Match(scrapy.Item):
-    _id = scrapy.Field()
-    team_1 = scrapy.Field()
-    team_2 = scrapy.Field()
-    date = scrapy.Field()
-    bets = scrapy.Field()
+    teams = scrapy.Field()
+    commence_time = scrapy.Field()
     sport = scrapy.Field()
     tournament = scrapy.Field()
+    tournament_nice = scrapy.Field()
+    country = scrapy.Field()
+    bets = scrapy.Field()
+    url = scrapy.Field()
+
 
 class Sports(Enum):
     FOOTBALL = "Football"
@@ -31,6 +38,7 @@ class Sports(Enum):
     TENNIS = "Tennis"
     ICE_HOCKEY ="Ice hockey"
     VOLLEYBALL = "Volleyball"
+
 
 class Bookmakers(Enum):
     BET365 = "Bet365"

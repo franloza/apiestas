@@ -47,6 +47,7 @@ class BetsRepository(BaseRepository):
     def get_bet_slug(match: MatchBase, bet: BetBase) -> str:
         return slugify(','.join
                        (match.teams + list(map(str, (match.sport, match.tournament,
-                                                     int(mktime(match.commence_time.timetuple())), bet.bookmaker)))))
+                                                     int(mktime(match.commence_time.timetuple())),
+                                                     bet.bookmaker, bet.bet_type, bet.bet_scope)))))
 
 
