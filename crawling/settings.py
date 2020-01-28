@@ -32,7 +32,9 @@ USER_AGENT_CHOICES = [
 ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-#CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 1
+
+LOG_LEVEL = 'INFO'
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
@@ -108,3 +110,6 @@ ITEM_PIPELINES = {
 # Configure API REST
 APIESTAS_API_URL = os.environ['APIESTAS_API_URL']
 APIESTAS_FIND_SIMILARITY_THRESHOLD = 80
+
+# Oddsportal spider
+ODDSPORTAL_MAX_BET_TYPES_PER_MATCH = 1

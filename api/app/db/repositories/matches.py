@@ -50,9 +50,9 @@ class MatchesRepository(BaseRepository):
             for bet in match.bets:
                 bet_slug = self._bets_repository.get_bet_slug(match, bet)
                 if bet_slug in db_match_bets_aux:
-                    db_match_bets_aux[bet_slug].odds = bet.odds
-                    db_match_bets_aux[bet_slug].url = bet.url
-                    db_match_bets_aux[bet_slug].updated_at = datetime.utcnow()
+                    created_at = db_match_bets_aux[bet_slug].created_at
+                    db_match_bets_aux[bet_slug] = BetInDB(**bet.dict(), slug=bet_slug)
+                    db_match_bets_aux[bet_slug].created_at = created_at
                 else:
                     db_match_bets_aux[bet_slug] = BetInDB(**bet.dict(), slug=bet_slug)
             db_match.bets = list(db_match_bets_aux.values())

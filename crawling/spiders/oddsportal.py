@@ -8,8 +8,9 @@ import json
 from urllib.parse import urlsplit, urljoin
 
 import scrapy
+from ..settings import ODDSPORTAL_MAX_BET_TYPES_PER_MATCH
 
-from crawling.items import Match, Bet, Sports, Bookmakers
+from crawling.items import Match, Bet
 
 
 class OddsPortalSpider(scrapy.Spider):
@@ -23,9 +24,10 @@ class OddsPortalSpider(scrapy.Spider):
     user_agent = ('Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.131 '
                   'Safari/537.36')
     sports_to_parse = (
-        #"soccer",
-        #"basketball",
-        "tennis"
+        "soccer",
+        "basketball",
+        "tennis",
+        "volleyball"
     )
 
     def __init__(self, **kwargs):
@@ -36,6 +38,7 @@ class OddsPortalSpider(scrapy.Spider):
         self.globals = {}
 
     def start_requests(self):
+        logging.info("Setting up Oddsportal variables from JS files")
         yield scrapy.Request(url=self.main_url, callback=self.setup,
                              headers={'user-agent': self.user_agent}, dont_filter=True)
 
@@ -87,6 +90,7 @@ class OddsPortalSpider(scrapy.Spider):
                              headers={'user-agent': self.user_agent}, dont_filter=True)
 
     def parse_tournaments(self, response):
+        logging.info("Start parsing of tournaments")
         xpath = '//li[@class="tournament"]/a/{property}'
         self.tournament_urls = dict(zip(
             response.xpath(xpath.format(property="@href")).getall(),
@@ -105,11 +109,16 @@ class OddsPortalSpider(scrapy.Spider):
                 logging.debug(f"Skipping tournament {tournament} because sport {sport} is not in sports to parse list")
 
     def parse_matches(self, response):
-        matches = response.xpath(
-                '//table[@id="tournamentTable"]//td[@class="name table-participant"]/a/@href').getall()
+        matches = response.xpath('//table[@id="tournamentTable"]//td[@class="name table-participant"]/a/@href').getall()
+        if matches:
+            logging.info(f"Enqueued parsing {len(matches)} matches of tournament"
+                         f" {self.tournament_urls[response.meta['tournament_url']]}. "
+                         f"Sport: {response.meta['sport']}. Country: {response.meta['country']}")
         for match in matches:
-            yield scrapy.Request(url=response.urljoin(match),
-                                 callback=self.parse_match, headers={'user-agent': self.user_agent}, meta=response.meta)
+            if match.startswith('/'):
+                yield scrapy.Request(url=response.urljoin(match),
+                                     callback=self.parse_match, headers={'user-agent': self.user_agent},
+                                     meta=response.meta)
 
     def parse_match(self, response):
         # Get page info
@@ -153,60 +162,93 @@ class OddsPortalSpider(scrapy.Spider):
         response.meta["match_url"] = response.url
 
         yield scrapy.Request(url=urljoin(self.odds_main_url,odds_url),
-                             callback=self.parse, headers={'user-agent': self.user_agent,
+                             callback=self.parse_first, headers={'user-agent': self.user_agent,
                                                            'referer': response.url},
                              meta=response.meta)
 
-    def parse(self, response) -> Match:
+    def parse_first(self, response):
         parsed = js2xml.parse(response.text)
         parsed_dict = js2xml.make_dict(parsed.xpath('//functioncall/arguments/object')[0])
-        if response.meta['first']:
-            response.meta['first'] = False
-            if parsed_dict.get('d', {}).get('nav'):
-                for betting_type_id in parsed_dict['d']['nav']:
-                    for scope_id in parsed_dict['d']['nav'][betting_type_id]:
-                        odds_url = (f'/feed/match/{response.meta["page_info"]["versionId"]}-'
-                                    f'{response.meta["page_info"]["sportId"]}-{response.meta["page_info"]["id"]}'
-                                    f'-{betting_type_id}-{scope_id}-{response.meta["page_info"]["xhash"]}.dat')
-                        yield scrapy.Request(url=urljoin(self.odds_main_url, odds_url),
-                                             callback=self.parse, headers={'user-agent': self.user_agent,
-                                                                           'referer': response.url},
-                                             meta=response.meta)
+        bets_to_parse = []
+        if parsed_dict.get('d', {}).get('nav'):
+            for i, betting_type_id in enumerate(parsed_dict['d']['nav']):
+                if ODDSPORTAL_MAX_BET_TYPES_PER_MATCH and i >= ODDSPORTAL_MAX_BET_TYPES_PER_MATCH:
+                    break
+                for scope_id in parsed_dict['d']['nav'][betting_type_id]:
+                    odds_url = (f'/feed/match/{response.meta["page_info"]["versionId"]}-'
+                                f'{response.meta["page_info"]["sportId"]}-{response.meta["page_info"]["id"]}'
+                                f'-{betting_type_id}-{scope_id}-{response.meta["page_info"]["xhash"]}.dat')
+                    bets_to_parse.append((odds_url, betting_type_id, scope_id))
+            if bets_to_parse:
+                logging.info(f"Start parsing {len(bets_to_parse)} types of bets from match with URL "
+                             f"{response.meta['match_url']}.")
+                odds_url, betting_type_id, scope_id = bets_to_parse.pop()
+                response.meta['betting_type_id'] = betting_type_id
+                response.meta["scope_id"] = scope_id
+                response.meta["bets_to_parse"] = bets_to_parse
+                response.meta["bets"] = []
+                yield scrapy.Request(url=urljoin(self.odds_main_url, odds_url),
+                                     callback=self.parse, headers={'user-agent': self.user_agent,
+                                                                   'referer': response.url},
+                                     meta=response.meta)
             else:
                 # There are not odds available for this event.
                 match = dict(response.meta['match'])
                 match['bets'] = []
                 yield Match(**match)
         else:
+            # There are not odds available for this event.
+            match = dict(response.meta['match'])
+            match['bets'] = []
+            yield Match(**match)
 
-            for bet_l1 in parsed_dict.get('d', {}).get('oddsdata', []):
-                # Bet Level 1: Back or Lay
-                for bet_l2 in parsed_dict['d']['oddsdata'][bet_l1]:
-                    # Bet Level 2: Odds, volume, movement and bet information
-                    bet_info = parsed_dict['d']['oddsdata'][bet_l1][bet_l2]
-                    bets = []
-                    for bookmaker_id in bet_info['odds']:
-                        bet_type = self.globals["betting_type_names"][str(response.meta["betting_type_id"])]['name']
-                        odds =  bet_info['odds'][bookmaker_id]
-                        if type(odds) == dict:
-                            if bet_type == "1X2":
-                                odds = [odds[odd_type] for odd_type in ('1', '2', 'X') if odd_type in odds]
-                            else:
-                                odds = list(odds.values())
-                        bet_dict = {
-                            "bookmaker": self.bookmakers_data[bookmaker_id]['WebUrl'],
-                            "bookmaker_nice": self.bookmakers_data[bookmaker_id]['WebName'],
-                            "feed" :  self.name,
-                            "date_extracted" :  datetime.utcnow(),
-                            "bet_type":  bet_type,
-                            "bet_scope":
-                                self.globals["scope_names"][str(response.meta["scope_id"])].replace('&nbsp;', ' '),
-                            "odds" : odds,
-                            "url" :  response.url,
-                            "is_back":  bet_info['isBack'],
-                        }
-                        bet = Bet(**bet_dict)
-                        bets.append(bet)
-                    match = dict(response.meta['match'])
-                    match['bets'] = bets
-                    yield Match(**match)
+    def parse(self, response) -> Match:
+        parsed = js2xml.parse(response.text)
+        parsed_dict = js2xml.make_dict(parsed.xpath('//functioncall/arguments/object')[0])
+        bets = []
+        bet_type = self.globals["betting_type_names"][str(response.meta["betting_type_id"])]['name']
+        bet_scope = self.globals["scope_names"][str(response.meta["scope_id"])].replace('&nbsp;', ' ')
+        for bet_l1 in parsed_dict.get('d', {}).get('oddsdata', []):
+            # Bet Level 1: Back or Lay
+            for bet_l2 in parsed_dict['d']['oddsdata'][bet_l1]:
+                # Bet Level 2: Odds, volume, movement and bet information
+                bet_info = parsed_dict['d']['oddsdata'][bet_l1][bet_l2]
+                for bookmaker_id in bet_info['odds']:
+                    odds =  bet_info['odds'][bookmaker_id]
+                    if type(odds) == dict:
+                        if bet_type == "1X2":
+                            odds = [odds[odd_type] for odd_type in ('1', '2', 'X') if odd_type in odds]
+                        else:
+                            odds = list(odds.values())
+                    bet_dict = {
+                        "bookmaker": self.bookmakers_data[bookmaker_id]['WebUrl'],
+                        "bookmaker_nice": self.bookmakers_data[bookmaker_id]['WebName'],
+                        "feed" :  self.name,
+                        "date_extracted" :  datetime.utcnow(),
+                        "bet_type":  bet_type,
+                        "bet_scope": bet_scope,
+                        "odds" : odds,
+                        "url" :  response.url,
+                        "is_back":  bet_info['isBack']
+                    }
+                    bet = Bet(**bet_dict)
+                    bets.append(bet)
+
+        logging.info(f"Parsed {len(bets)} bets of type {bet_type} and scope {bet_scope}. Url: {response.url}. "
+                     f"Remaining bets of match to parse: {len(response.meta['bets_to_parse'])}")
+        response.meta["bets"].extend(bets)
+        if response.meta["bets_to_parse"]:
+            odds_url, betting_type_id, scope_id = response.meta["bets_to_parse"].pop()
+            response.meta['betting_type_id'] = betting_type_id
+            response.meta["scope_id"] = scope_id
+            yield scrapy.Request(url=urljoin(self.odds_main_url, odds_url),
+                                 callback=self.parse, headers={'user-agent': self.user_agent,
+                                                               'referer': response.url},
+                                 meta=response.meta)
+        else:
+            match = dict(response.meta['match'])
+            match['bets'] = response.meta["bets"]
+            logging.info(f"Finished parsing {len(response.meta['bets'])} bets "
+                         f"from match with URL {response.meta['match_url']}.")
+            yield Match(**match)
+
