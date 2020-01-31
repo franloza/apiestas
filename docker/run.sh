@@ -3,13 +3,13 @@
 set -e
 
 echo "Starting docker ."
-docker-compose up -d --build
+docker-compose  -f docker-compose.yml -f docker-compose.kafka.yml up -d --build
 
 function clean_up {
     echo -e "\n\nSHUTTING DOWN\n\n"
     curl --output /dev/null -X DELETE http://localhost:8083/connectors/mongo-source || true
     docker-compose exec mongo /usr/bin/mongo --eval "db.dropDatabase()"
-    docker-compose down
+    docker-compose  -f docker-compose.yml -f docker-compose.kafka.yml down
     if [ -z "$1" ]
     then
       echo -e "Bye!\n"
