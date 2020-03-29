@@ -17,6 +17,9 @@ python-slugify = "~=4.0"
 async-exit-stack = "*"
 async-generator = "*"
 js2xml = "*"
+confluent-kafka = "==1.2.0"
+requests = "*"
+avro-python3 = "*"
 
 [dev-packages]
 pylint = "*"

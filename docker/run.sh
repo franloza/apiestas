@@ -76,7 +76,8 @@ curl -X POST -H "Content-Type: application/json" --data '
      "errors.log.include.messages": "true",
      "topic.prefix":"mongo",
      "database":"apiestas",
-     "collection":"matches"
+     "collection":"matches",
+     "publish.full.document.only": "true"
 }}' http://localhost:8083/connectors -w "\n"
 
 sleep 2
