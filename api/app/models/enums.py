@@ -14,3 +14,4 @@ class Sport(str, Enum):
     RUGBY = "rugby"
     FUTSAL = "futsal"
     BADMINTON = "badminton"
+

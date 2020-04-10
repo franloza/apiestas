@@ -221,6 +221,24 @@ services:
     environment:
       - DB_CONNECTION=mongodb://mongo:27017,mongo2:27017,mongo3:27017
 
+  surebets:
+    container_name: surebets
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    environment:
+      - APIESTAS_API_URL: "api:8000"
+      - KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
+      - KAFKA_BROKER_URL: "broker:29092"
+      - APIESTAS_DBNAME: "apiestas"
+      - KAFKA_SUBSCRIPTION_NAME: "mongo.apiestas.matches"
+    depends_on:
+      - api
+      - rest-proxy
+    command: surebets
+    networks:
+      - localnet
+
 volumes:
   rs2:
   rs3:

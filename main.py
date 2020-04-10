@@ -17,6 +17,11 @@ def crawler():
     from crawling.run import start_process
     start_process()
 
+@app.command()
+def surebets():
+    from surebets.main import main
+    main()
+
 
 if __name__ == "__main__":
     app()
