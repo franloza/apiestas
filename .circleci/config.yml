@@ -30,7 +30,9 @@ jobs:
             pipenv install --dev
       - run:
           name: Run tests
-          command: pipenv run pytest -v --cov=api.app api/tests/
+          command: pipenv run pytest -v --cov=api.app api/tests/ --cov-report html:htmlcov
+      - store_artifacts:
+          path: htmlcov
       - save_cache:
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:

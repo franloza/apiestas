@@ -5,6 +5,9 @@
 .. image:: https://img.shields.io/github/license/Naereen/StrapDown.js.svg
    :target: https://github.com/franloza/apiestas/blob/master/LICENSE
 
+.. image:: https://circleci.com/gh/franloza/apiestas/tree/master.svg?style=shield
+    :target: https://circleci.com/gh/franloza/apiestas/tree/master
+
 Introduction
 ------------
 Apiestas is a project composed of a backend powered by the awesome framework `FastAPI
