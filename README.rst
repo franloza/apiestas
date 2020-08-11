@@ -61,7 +61,7 @@ Application will be available on ``localhost`` or ``127.0.0.1`` in your browser.
 
 Run tests with Docker
 -----------------------
- ::
+::
 
     docker-compose -f docker-compose-test.yml run tests
 
@@ -85,13 +85,12 @@ Data sources
 ------------
 
 Currently the application implements two working crawlers:
-
-* ``elcomparador.com`` - for matches and odds data
+* ``oddsportalcom`` - Used as ground truth for matches and odds
+* ``elcomparador.com`` - for odds data
 * ``Codere`` - for odds data
 
-Todo
+TODO
 ----
-1) Add unit and integration tests
-2) Implement ``oddsportal.com`` crawler to define ground truth for matches.
+1) Implement surebets calculation
 
 
