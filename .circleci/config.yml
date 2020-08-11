@@ -1,14 +1,24 @@
 version: 2
 jobs:
   build-and-test:
-    machine: true
+    docker:
+      - image: circleci/python:3.6
+        environment:
+          DB_CONNECTION=mongodb://localhost:27017
+          DEBUG=true
+      - image: circleci/mongo:4.1
     steps:
-      - checkout
+      - run:
+        name: install dockerize
+        command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+        environment:
+          DOCKERIZE_VERSION: v0.6.0
+      - run:
+        name: Wait for db
+        command: dockerize -wait tcp://localhost:27017 -timeout 1m
       - run:
           name: Run tests
-          command: |
-            set -x
-            docker-compose -f docker-compose-test.yml run tests
+          command: pytest -v --cov=api.app api/tests/
 
 workflows:
   version: 2
