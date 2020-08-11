@@ -27,8 +27,7 @@ jobs:
           name: Install dependencies
           command: |
             sudo pip install pipenv && \
-            pipenv install --dev && \
-            pipenv run pytest tests/ --disable-warnings
+            pipenv install --dev
       - run:
           name: Run tests
           command: pipenv run pytest -v --cov=api.app api/tests/
