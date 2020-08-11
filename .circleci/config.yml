@@ -18,3 +18,9 @@ jobs:
           command: |
             set -x
             docker-compose -f docker-compose-test.yml run tests
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build-and-test
