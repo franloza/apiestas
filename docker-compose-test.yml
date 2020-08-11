@@ -1,16 +1,7 @@
-version: '3.4'
+version: '3.2'
 services:
   db:
-    container_name: "mongo"
     image: mongo:4
-    environment:
-      - MONGO_DATA_DIR=/data/db
-      - MONGO_LOG_DIR=/dev/null
-    volumes:
-      - mongo:/data/db'
-    ports:
-      - "27017:27017"
-    command: mongod --logpath /dev/null
   tests:
     build: .
     environment:
@@ -22,6 +13,3 @@ services:
     volumes:
       - .:/apiestas
     command: "-v --cov=api.app /apiestas/api/tests/"
-volumes:
-  mongo:
-    name: mongo

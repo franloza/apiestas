@@ -5,6 +5,9 @@
 .. image:: https://img.shields.io/github/license/Naereen/StrapDown.js.svg
    :target: https://github.com/franloza/apiestas/blob/master/LICENSE
 
+.. image:: https://circleci.com/gh/franloza/apiestas/tree/master.svg?style=shield
+    :target: https://circleci.com/gh/franloza/apiestas/tree/master
+
 Introduction
 ------------
 Apiestas is a project composed of a backend powered by the awesome framework `FastAPI
@@ -61,7 +64,7 @@ Application will be available on ``localhost`` or ``127.0.0.1`` in your browser.
 
 Run tests with Docker
 -----------------------
- ::
+::
 
     docker-compose -f docker-compose-test.yml run tests
 
@@ -85,13 +88,12 @@ Data sources
 ------------
 
 Currently the application implements two working crawlers:
-
-* ``elcomparador.com`` - for matches and odds data
+* ``oddsportalcom`` - Used as ground truth for matches and odds
+* ``elcomparador.com`` - for odds data
 * ``Codere`` - for odds data
 
-Todo
+TODO
 ----
-1) Add unit and integration tests
-2) Implement ``oddsportal.com`` crawler to define ground truth for matches.
+1) Implement surebets calculation
 
 
