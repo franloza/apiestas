@@ -11,6 +11,7 @@ from ...db.repositories.base import BaseRepository
 from ...db.repositories.bets import BetsRepository
 from ...core.config import COLLECTION_NAME
 from ...models.bets import BetInDB
+from ...models.enums import Sport
 from ...models.matches import Match, MatchInUpsert, MatchBase, MatchInDB
 
 
@@ -27,9 +28,9 @@ class MatchesRepository(BaseRepository):
         else:
             raise EntityDoesNotExist("match with slug {0} does not exist".format(slug))
 
-    async def filter_matches(self, commence_day: datetime.date, sport : str, tournament :  str = None,
-                             commence_time: datetime.date = None) -> List[Match]:
-        query = {"sport": sport}
+    async def filter_matches(self, commence_day: date, sport: Sport, tournament:  str = None,
+                             commence_time: datetime = None) -> List[Match]:
+        query = {"sport": sport.value}
         if commence_time:
             query["commence_time"] = commence_time
         else:
