@@ -16,10 +16,14 @@ loguru = "*"
 python-slugify = "~=4.0"
 async-exit-stack = "*"
 async-generator = "*"
-js2xml = "*"
+js2xml = "==0.3.1"
 
 [dev-packages]
 pylint = "*"
+pytest = "*"
+pymongo = "*"
+requests = "*"
+pytest-coverage = "*"
 
 [requires]
 python_version = "3.6"

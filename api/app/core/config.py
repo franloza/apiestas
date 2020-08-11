@@ -22,8 +22,9 @@ ALLOWED_HOSTS: List[str] = config(
 )
 
 # Database configuration
-MONGO_DB: str = PROJECT_NAME.lower()
+MONGO_DB: str = config("MONGO_DB", default=PROJECT_NAME.lower())
 DATABASE_URL: str = f'{config("DB_CONNECTION", cast=str)}/{MONGO_DB}'
+COLLECTION_NAME: str = "matches"
 MAX_CONNECTIONS_COUNT: int = config("MAX_CONNECTIONS_COUNT", cast=int, default=10)
 MIN_CONNECTIONS_COUNT: int = config("MIN_CONNECTIONS_COUNT", cast=int, default=10)
 

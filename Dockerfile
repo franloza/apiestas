@@ -7,7 +7,7 @@ RUN pip install pipenv
 
 WORKDIR /build
 COPY Pipfile Pipfile.lock /build/
-RUN bash -c 'PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy --ignore-pipfile'
+RUN bash -c 'PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy --ignore-pipfile --dev'
 
 FROM python:3.6-slim as app
 

@@ -5,7 +5,7 @@ from slugify import slugify
 
 from ...db.errors import EntityDoesNotExist
 from ...db.repositories.base import BaseRepository
-
+from ...core.config import COLLECTION_NAME
 from ...models.bets import BetBase, BetInDB, BetInUpsert, Bet
 from ...models.matches import MatchInDB, MatchBase
 
@@ -13,7 +13,7 @@ from ...models.matches import MatchInDB, MatchBase
 class BetsRepository(BaseRepository):
     def __init__(self, client: AsyncIOMotorDatabase) -> None:
         super().__init__(client)
-        self._client = self._client["matches"]
+        self._client = self._client[COLLECTION_NAME]
 
     async def get_bet_by_slug(self, slug: str) -> BetInDB:
         doc = await self.client.find_one({'bets.slug':slug}, {'_id': 0, 'bets.$': 1})

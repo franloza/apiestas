@@ -24,7 +24,7 @@ router = APIRouter()
 )
 async def list_matches(
     matches_filters: MatchFilterParams = Depends(get_matches_filters),
-    matches_repo : MatchesRepository = Depends(get_repository(MatchesRepository)),
+    matches_repo: MatchesRepository = Depends(get_repository(MatchesRepository)),
 ) -> ManyMatchesInResponse:
     """
     Get a list of matches that fulfil the specified filtering criteria
