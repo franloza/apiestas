@@ -9,7 +9,7 @@ from slugify import slugify
 from ...db.errors import EntityDoesNotExist
 from ...db.repositories.base import BaseRepository
 from ...db.repositories.bets import BetsRepository
-
+from ...core.config import COLLECTION_NAME
 from ...models.bets import BetInDB
 from ...models.matches import Match, MatchInUpsert, MatchBase, MatchInDB
 
@@ -17,7 +17,7 @@ from ...models.matches import Match, MatchInUpsert, MatchBase, MatchInDB
 class MatchesRepository(BaseRepository):
     def __init__(self, client: AsyncIOMotorDatabase) -> None:
         super().__init__(client)
-        self._client = self._client["matches"]
+        self._client = self._client[COLLECTION_NAME]
         self._bets_repository = BetsRepository(client)
 
     async def get_match_by_slug(self, slug: str) -> MatchInDB:
