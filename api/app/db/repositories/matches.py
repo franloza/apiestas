@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from datetime import datetime, timedelta, date
-from time import mktime
+import calendar
 from typing import List
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -73,6 +73,6 @@ class MatchesRepository(BaseRepository):
     def _get_match_slug(match: MatchBase) -> str:
         return slugify(
             ','.join(match.teams + list(map(str, (match.sport, match.tournament,
-                                                  int(mktime(match.commence_time.timetuple())))))))
+                                                  calendar.timegm(match.commence_time.utctimetuple()))))))
 
 

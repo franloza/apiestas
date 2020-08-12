@@ -3,9 +3,7 @@ services:
   db:
     image: mongo:4
   tests:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
+    build: .
     environment:
       - DB_CONNECTION=mongodb://db:27017
       - DEBUG=true
@@ -14,4 +12,4 @@ services:
     entrypoint: pytest
     volumes:
       - ..:/apiestas
-    command: "-v --cov=api.app /apiestas/api/tests/"
+    command: "-v /apiestas/api/tests/"
