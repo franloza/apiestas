@@ -2,8 +2,12 @@ version: '3.2'
 services:
   db:
     image: mongo:4
+    ports:
+      - "27017:27017"
   tests:
-    build: .
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
     environment:
       - DB_CONNECTION=mongodb://db:27017
       - DEBUG=true
