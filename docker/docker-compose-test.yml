@@ -1,0 +1,17 @@
+version: '3.2'
+services:
+  db:
+    image: mongo:4
+  tests:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    environment:
+      - DB_CONNECTION=mongodb://db:27017
+      - DEBUG=true
+    depends_on:
+      - db
+    entrypoint: pytest
+    volumes:
+      - ..:/apiestas
+    command: "-v --cov=api.app /apiestas/api/tests/"
