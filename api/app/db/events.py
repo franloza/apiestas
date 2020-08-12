@@ -10,12 +10,16 @@ async def connect_to_db(app: FastAPI) -> None:
     app.state.db = AsyncIOMotorClient(
         str(DATABASE_URL),
         maxPoolSize=MAX_CONNECTIONS_COUNT,
-        minPoolSize=MIN_CONNECTIONS_COUNT)
+        minPoolSize=MIN_CONNECTIONS_COUNT,
+        tz_aware=True)
     logger.debug(await app.state.db.server_info())
     logger.info("Connection established")
 
 
 async def close_db_connection(app: FastAPI) -> None:
     logger.info("Closing connection to database")
-    await app.state.db.close()
+    try:
+        await app.state.db.close()
+    except TypeError:
+        pass
     logger.info("Connection closed")

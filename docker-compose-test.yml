@@ -12,4 +12,4 @@ services:
     entrypoint: pytest
     volumes:
       - .:/apiestas
-    command: "-v --cov=api.app /apiestas/api/tests/"
+    command: "-v /apiestas/api/tests/"

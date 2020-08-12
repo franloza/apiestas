@@ -56,9 +56,9 @@ async def find_match(
     matches_repo: MatchesRepository = Depends(get_repository(MatchesRepository)),
 ) -> Match:
     """
-    Do a fuzzy search using team names to find a match. We recommend to specify as filters as possible (e.g. specific
-    commence time) to speed up retrieval process and avoid retrieving more than one match. It uses Partial Ratio
-    between two slugs obtained from team names.
+    Do a fuzzy search using team names to find a match. We recommend to specify as many filters as possible
+    (e.g. specific commence time) to speed up retrieval process and avoid retrieving more than one match.
+    It uses Partial Ratio between two slugs obtained from team names.
 
     - **teams**: Name of the teams that participate in the match.
     - **commence_day**: Date of commence of the match. If **commence_time** is not specified, it sets
@@ -116,7 +116,7 @@ async def get_match(match = Depends(get_match_by_slug_from_path)) -> Match:
 )
 async def upsert_match(
     match: MatchInUpsert,
-    matches_repo : MatchesRepository = Depends(get_repository(MatchesRepository)),
+    matches_repo: MatchesRepository = Depends(get_repository(MatchesRepository)),
 ) -> MatchInResponse:
     match = await matches_repo.upsert_match(match=match)
     return MatchInResponse(match=match, bets_count=len(match.bets))

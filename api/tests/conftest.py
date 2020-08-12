@@ -8,6 +8,7 @@ from starlette.testclient import TestClient
 @pytest.fixture
 def client():
     os.environ['MONGO_DB'] = 'test'
+    os.environ['DEBUG'] = 'false'
     from api.app.asgi import app
     with TestClient(app) as c:
         yield c
@@ -16,7 +17,7 @@ def client():
 @pytest.yield_fixture(scope='function')
 def collection():
     from api.app.core.config import COLLECTION_NAME
-    mongo = MongoClient(os.environ['DB_CONNECTION'])['test']
+    mongo = MongoClient(os.environ['DB_CONNECTION'], tz_aware=True)['test']
     col = mongo[COLLECTION_NAME]
     col.drop()
     yield col
