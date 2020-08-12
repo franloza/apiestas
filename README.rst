@@ -72,8 +72,9 @@ containers initialization
 
 If you run Apiestas with Kafka and Kafka Connect, you will enable Kafka UI, where you can to examine the
 topics: ``http://localhost:9021`` or ``http://localhost:8000/``
-  - The `matches` topic should have the crawled bets and matches.
-  - The `mongo.apiestas.matches` topic should contain the change events.
+
+  * The `matches` topic should have the crawled bets and matches.
+  * The `mongo.apiestas.matches` topic should contain the change events.
 
 You can also examine the collections in the MongoDB by executing: ::
 
@@ -110,6 +111,10 @@ Currently the application implements two working crawlers:
 *  ``oddsportalcom`` - Used as ground truth for matches and odds
 *  ``elcomparador.com`` - for odds data
 *  ``Codere`` - for odds data
+
+Architecture
+------------
+.. image:: img/apiestas_arch.png
 
 TODO
 ----
