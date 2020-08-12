@@ -11,5 +11,5 @@ router = APIRouter()
     response_model=Bet,
     name="bets:get-bet"
 )
-async def get_bet(bet = Depends(get_bet_by_slug_from_path)) -> Bet:
+async def get_bet(bet=Depends(get_bet_by_slug_from_path)) -> Bet:
     return Bet(**bet.dict())

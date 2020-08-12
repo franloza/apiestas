@@ -1,4 +1,4 @@
-from time import mktime
+import calendar
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from slugify import slugify
@@ -47,7 +47,7 @@ class BetsRepository(BaseRepository):
     def get_bet_slug(match: MatchBase, bet: BetBase) -> str:
         return slugify(','.join
                        (match.teams + list(map(str, (match.sport, match.tournament,
-                                                     int(mktime(match.commence_time.timetuple())),
+                                                     calendar.timegm(match.commence_time.utctimetuple()),
                                                      bet.bookmaker, bet.bet_type, bet.bet_scope)))))
 
 
