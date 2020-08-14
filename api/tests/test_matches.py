@@ -17,11 +17,11 @@ def test_get_match_by_slug(client, collection):
             "bets": [],
             "created_at": datetime(2020, 8, 11, 20, 25, 58),
             "updated_at": datetime(2020, 8, 11, 20, 25, 58),
-            "slug": "test-fc-ad-test-sport-basketball-test-league-1597231800",
+            "slug": "test-fc-ad-test-basketball-test-league-1597231800",
             "feed": "test"
         }
     )
-    response = client.get("/api/matches/test-fc-ad-test-sport-basketball-test-league-1597231800")
+    response = client.get("/api/matches/test-fc-ad-test-basketball-test-league-1597231800")
     assert response.status_code == 200
     assert response.json() == {
         "sport": "basketball",
@@ -36,7 +36,7 @@ def test_get_match_by_slug(client, collection):
         "bets": [],
         "createdAt": "2020-08-11T20:25:58Z",
         "updatedAt": "2020-08-11T20:25:58Z",
-        "slug": "test-fc-ad-test-sport-basketball-test-league-1597231800",
+        "slug": "test-fc-ad-test-basketball-test-league-1597231800",
     }
 
 
@@ -55,7 +55,7 @@ def test_list_matches(client, collection):
             "bets": [],
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow(),
-            "slug": "test-fc-ad-test-sport-soccer-test-cup-1597350600",
+            "slug": "test-fc-ad-test-soccer-test-cup-1597350600",
         },
         {
             "sport": "soccer",
@@ -70,7 +70,7 @@ def test_list_matches(client, collection):
             "bets": [],
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow(),
-            "slug": "ud-testing-atletico-de-testeo-sport-soccer-test-league-1597318200",
+            "slug": "ud-testing-atletico-de-testeo-soccer-test-league-1597318200",
         },
         {
             "sport": "soccer",
@@ -85,7 +85,7 @@ def test_list_matches(client, collection):
             "bets": [],
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow(),
-            "slug": "real-testing-fc-testalona-sport-soccer-test-league-1597231800",
+            "slug": "real-testing-fc-testalona-soccer-test-league-1597231800",
         },
         {
             "sport": "basketball",
@@ -113,7 +113,7 @@ def test_list_matches(client, collection):
     assert response.status_code == 200
     data = response.json()
     assert data['matchesCount'] == 1
-    assert data['matches'][0]['slug'] == "ud-testing-atletico-de-testeo-sport-soccer-test-league-1597318200"
+    assert data['matches'][0]['slug'] == "ud-testing-atletico-de-testeo-soccer-test-league-1597318200"
 
     # By Commence Time and sport
     response = client.get("/api/matches/", params={
@@ -123,7 +123,7 @@ def test_list_matches(client, collection):
     assert response.status_code == 200
     data = response.json()
     assert data['matchesCount'] == 1
-    assert data['matches'][0]['slug'] == "test-fc-ad-test-sport-soccer-test-cup-1597350600"
+    assert data['matches'][0]['slug'] == "test-fc-ad-test-soccer-test-cup-1597350600"
 
 
 def test_find_match(client, collection):
@@ -141,7 +141,7 @@ def test_find_match(client, collection):
             "bets": [],
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow(),
-            "slug": "testeo-fc-ad-testing-sport-soccer-test-cup-1597350600",
+            "slug": "testeo-fc-ad-testing-soccer-test-cup-1597350600",
         },
         {
             "sport": "soccer",
@@ -156,7 +156,7 @@ def test_find_match(client, collection):
             "bets": [],
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow(),
-            "slug": "testalona-fc-atletico-de-testeo-sport-soccer-test-cup-1597350600",
+            "slug": "testalona-fc-atletico-de-testeo-soccer-test-cup-1597350600",
         }]
     )
 
@@ -172,7 +172,7 @@ def test_find_match(client, collection):
     })
     assert response.status_code == 200
     data = response.json()
-    assert data['slug'] == "testeo-fc-ad-testing-sport-soccer-test-cup-1597350600"
+    assert data['slug'] == "testeo-fc-ad-testing-soccer-test-cup-1597350600"
 
     # Match not found due to query filters
     response = client.get("/api/matches/find", params={
@@ -238,13 +238,13 @@ def test_upsert_match(client, collection):
                     ],
                     "created_at": datetime.utcnow(),
                     "updated_at": datetime.utcnow(),
-                    "slug": "testeo-fc-ad-testing-sport-soccer-test-cup-1597350600-testbet-1-x-2-full-time",
+                    "slug": "testeo-fc-ad-testing-soccer-test-cup-1597350600-testbet-1-x-2-full-time-true",
                     "feed": "testfeed_1"
                 },
             ],
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow(),
-            "slug": "testeo-fc-ad-testing-sport-soccer-test-cup-1597350600",
+            "slug": "testeo-fc-ad-testing-soccer-test-cup-1597350600",
             "feed": "testfeed_1"
         }
     )
@@ -281,9 +281,9 @@ def test_upsert_match(client, collection):
     assert response.status_code == 200
     data = response.json()
     assert data['betsCount'] == 1
-    assert data['match']['slug'] == 'testalona-fc-atletico-de-testeo-sport-soccer-test-cup-1597350600'
+    assert data['match']['slug'] == 'testalona-fc-atletico-de-testeo-soccer-test-cup-1597350600'
     assert (data['match']['bets'][0]['slug'] ==
-            'testalona-fc-atletico-de-testeo-sport-soccer-test-cup-1597350600-testfair-1x2-full-time')
+            'testalona-fc-atletico-de-testeo-soccer-test-cup-1597350600-testfair-1x2-full-time-true')
 
     # Update existing match
     response = client.put("/api/matches/", data=json.dumps({
@@ -317,5 +317,5 @@ def test_upsert_match(client, collection):
     assert response.status_code == 200
     data = response.json()
     assert data['betsCount'] == 2
-    assert data['match']['slug'] == 'testeo-fc-ad-testing-sport-soccer-test-cup-1597350600'
+    assert data['match']['slug'] == 'testeo-fc-ad-testing-soccer-test-cup-1597350600'
 

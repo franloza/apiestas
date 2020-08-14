@@ -13,7 +13,7 @@ from ...core.config import COLLECTION_NAME
 from ...models.bets import BetInDB
 from ...models.enums import Sport
 from ...models.matches import Match, MatchInUpsert, MatchBase, MatchInDB
-from ...models.surebets import SureBetInUpsert
+from ...models.surebets import SureBetInUpsert, SureBetBase, SureBet
 
 
 class MatchesRepository(BaseRepository):
@@ -111,13 +111,25 @@ class MatchesRepository(BaseRepository):
             self.client.insert_one(MatchInDB(**match_dict).dict())
         return Match(**match_dict)
 
-    async def create_surebets(self, match_slug: str, surebets: List[SureBetInUpsert]) -> None:
-        self.client.update_one({"slug": match_slug}, {"$set": {"surebets": surebets}})
+    async def create_surebets(self, match: Match, surebets: List[SureBetInUpsert]) -> None:
+        db_surebets = []
+        for surebet in surebets:
+            db_surebets.append(SureBet(slug=self._get_surebet_slug(match, surebet), **surebet.dict()).dict())
+        await self.client.update_one(
+            {"slug": match.slug}, {"$set": {"surebets": db_surebets}})
 
     @staticmethod
     def _get_match_slug(match: MatchBase) -> str:
         return slugify(
-            ','.join(match.teams + list(map(str, (match.sport, match.tournament,
+            ','.join(match.teams + list(map(str, (match.sport.value, match.tournament,
                                                   calendar.timegm(match.commence_time.utctimetuple()))))))
 
 
+    @staticmethod
+    def _get_surebet_slug(match: MatchBase, surebet: SureBetBase) -> str:
+        slug_elems = match.teams + [match.sport.value, match.tournament, calendar.timegm(match.commence_time.utctimetuple()),
+                                    surebet.bet_type, surebet.bet_scope, surebet.is_back, surebet.outcomes[0].bookmaker,
+                                    surebet.outcomes[1].bookmaker]
+        if len(surebet.outcomes) > 2:
+            slug_elems.append(surebet.outcomes[2].bookmaker)
+        return slugify(','.join(map(str, slug_elems)))

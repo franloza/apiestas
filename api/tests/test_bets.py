@@ -28,25 +28,25 @@ def test_get_bet(client, collection):
                     ],
                     "created_at": datetime.utcnow(),
                     "updated_at": datetime.utcnow(),
-                    "slug": "testeo-basket-real-basketball-sport-basketball-test-league-1597231800-test-365-over-under-full-time",
+                    "slug": "testeo-basket-real-basketball-basketball-test-league-1597231800-test-365-over-under-full-time-true",
                     "feed": "testfeed_1"
                 }
             ]
         }
     )
     # Existing betdocker-co
-    response = client.get("/api/matches/bets/testeo-basket-real-basketball-sport-basketball-test-league-1597231800-test-365-over-under-full-time")
+    response = client.get("/api/matches/bets/testeo-basket-real-basketball-basketball-test-league-1597231800-test-365-over-under-full-time-true")
     assert response.status_code == 200
     data = response.json()
-    assert data['slug'] == f'testeo-basket-real-basketball-sport-basketball-test-league-1597231800-test-365-over-under-full-time'
+    assert data['slug'] == f'testeo-basket-real-basketball-basketball-test-league-1597231800-test-365-over-under-full-time-true'
 
     # Non-existing bet
-    response = client.get("/api/matches/bets/testeo-basket-real-basketball-sport-basketball-test-league-1597231800-test-365-over-under-1st-half")
+    response = client.get("/api/matches/bets/testeo-basket-real-basketball-basketball-test-league-1597231800-test-365-over-under-1st-half-true")
     assert response.status_code == 404
 
 
 def test_upsert_bet(client, collection):
-    match_slug = 'testeo-fc-ad-testing-sport-soccer-test-cup-1597357800'
+    match_slug = 'testeo-fc-ad-testing-soccer-test-cup-1597357800'
     collection.insert_one(
         {
             "sport": "soccer",
@@ -73,7 +73,7 @@ def test_upsert_bet(client, collection):
                     ],
                     "created_at": datetime.utcnow(),
                     "updated_at": datetime.utcnow(),
-                    "slug": f"{match_slug}-testbet-1x2-full-time",
+                    "slug": f"{match_slug}-testbet-1x2-full-time-true",
                     "feed": "testfeed_1"
                 },
             ],
@@ -103,7 +103,7 @@ def test_upsert_bet(client, collection):
         ))
     assert response.status_code == 200
     data = response.json()
-    assert data['slug'] == f'{match_slug}-testfair-1x2-full-time'
+    assert data['slug'] == f'{match_slug}-testfair-1x2-full-time-true'
 
     # Update existing bet
     response = client.put(
@@ -125,7 +125,7 @@ def test_upsert_bet(client, collection):
         ))
     assert response.status_code == 200
     data = response.json()
-    assert data['slug'] == f'{match_slug}-testbet-1x2-full-time'
+    assert data['slug'] == f'{match_slug}-testbet-1x2-full-time-true'
 
     # Check that DB is updated correctly
     bets_in_db = collection.find_one({'slug': match_slug}, {'bets': 1})['bets']

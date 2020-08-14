@@ -28,7 +28,7 @@ class SureBetBase(RWModel):
 
 
 class SureBet(DateTimeModelMixin, SureBetBase):
-    slug: str = Field(..., example="brighton-bournemouth-football-premier-league-1x2-full-time-false-bet365-pinnacle")
+    slug: str = Field(..., example="brighton-bournemouth-football-premier-league-1597350600-1x2-full-time-false-bet365-pinnacle")
 
 
 class SureBetInDB(SureBet):

@@ -144,8 +144,7 @@ async def upsert_bet(
 )
 async def create_surebets(
         surebets: List[SureBetInUpsert],
-        slug: str = Depends(check_by_slug_from_path),
+        match: MatchInDB = Depends(get_match_by_slug_from_path),
         matches_repo: MatchesRepository = Depends(get_repository(MatchesRepository)),
-) -> bool:
-    await matches_repo.create_surebets(match_slug=slug, surebets=surebets)
-    return True
+) -> dict:
+    await matches_repo.create_surebets(match=match, surebets=surebets)
