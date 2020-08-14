@@ -16,7 +16,7 @@ services:
       context: ..
       dockerfile: docker/Dockerfile
     environment:
-      - APIESTAS_API_URL=api:8000
+      - APIESTAS_API_URL=api:9000
     depends_on:
       - api
     command: crawler
@@ -32,7 +32,7 @@ services:
       - DB_CONNECTION=mongodb://mongo:27017
       - DEBUG=true
     ports:
-      - 9000:8000
+      - 9000:9000
     depends_on:
       - mongo
     command: api

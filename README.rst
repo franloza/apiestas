@@ -62,7 +62,7 @@ Then just run: ::
     cd docker
     docker-compose up -d
 
-The API will be available on ``localhost:8000`` in your browser.
+The API will be available on ``localhost:9000`` in your browser.
 
 If you want to enable the surebets calculation feature, you need to use the extended Docker Compose file for Kafka
 environment. This file is ``docker-compose.kafka.yml``. However, instead of executing this file directly along with
@@ -71,7 +71,7 @@ and wait for the systems to be ready.
 containers initialization
 
 If you run Apiestas with Kafka and Kafka Connect, you will enable Kafka UI, where you can to examine the
-topics: ``http://localhost:9021`` or ``http://localhost:8000/``
+topics and other info.: ``http://localhost:9021`` or ``http://localhost:8001/``
 
   * The `matches` topic should have the crawled bets and matches.
   * The `mongo.apiestas.matches` topic should contain the change events.
@@ -79,6 +79,11 @@ topics: ``http://localhost:9021`` or ``http://localhost:8000/``
 You can also examine the collections in the MongoDB by executing: ::
 
     docker-compose exec mongo /usr/bin/mongo
+
+To see the logs of the different services, you can execute the following command: ::
+
+    docker-compose -f docker-compose.yml -f docker-compose.kafka.yml  logs -f api surebets crawler
+
 
 Run tests with Docker
 -----------------------

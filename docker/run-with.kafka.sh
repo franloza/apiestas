@@ -72,7 +72,7 @@ curl -X POST -H "Content-Type: application/json" --data '
      "tasks.max":"1",
      "connector.class":"com.mongodb.kafka.connect.MongoSourceConnector",
      "connection.uri":"mongodb://mongo:27017,mongo2:27017,mongo3:27017",
-      "errors.log.enable": "true",
+     "errors.log.enable": "true",
      "errors.log.include.messages": "true",
      "topic.prefix":"mongo",
      "database":"apiestas",

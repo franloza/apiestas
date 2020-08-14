@@ -227,11 +227,11 @@ services:
       context: ..
       dockerfile: docker/Dockerfile
     environment:
-      - APIESTAS_API_URL: "api:8000"
-      - KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
-      - KAFKA_BROKER_URL: "broker:29092"
-      - APIESTAS_DBNAME: "apiestas"
-      - KAFKA_SUBSCRIPTION_NAME: "mongo.apiestas.matches"
+      APIESTAS_API_URL: "http://api:9000"
+      KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
+      KAFKA_BROKER_URL: "broker:29092"
+      APIESTAS_DBNAME: "apiestas"
+      KAFKA_SUBSCRIPTION_NAME: "mongo.apiestas.matches"
     depends_on:
       - api
       - rest-proxy

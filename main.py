@@ -8,7 +8,7 @@ app = typer.Typer()
 
 
 @app.command()
-def api(port: int = 8000, reload: bool = False):
+def api(port: int = 9000, reload: bool = False):
     run_server(app="api.app.asgi:app", host="0.0.0.0", port=port, reload=reload, log_level="info")
 
 
