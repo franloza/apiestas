@@ -206,6 +206,8 @@ services:
       - localnet
     ports:
       - "27018:27017"
+    restart: on-failure
+
   mongo3:
     image: "mongo:4.0-xenial"
     container_name: mongo3
@@ -216,6 +218,7 @@ services:
       - localnet
     ports:
       - "27019:27017"
+    restart: on-failure
 
   api:
     environment:

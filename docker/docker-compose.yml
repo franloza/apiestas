@@ -9,6 +9,7 @@ services:
       - localnet
     ports:
       - "27017:27017"
+    restart: on-failure
 
   crawler:
     container_name: crawler
@@ -38,6 +39,7 @@ services:
     command: api
     networks:
       - localnet
+    restart: on-failure
 
 volumes:
   rs1:

@@ -53,12 +53,17 @@ class MatchesRepository(BaseRepository):
 
     async def filter_surebets(self, commence_day: datetime.date, sport: Sport = None, min_profit: float = None
                               ) -> List[MatchInDB]:
-        query = {}
+        query = {
+            "surebets": {"$exists": True, "$ne": None, "$not": {"$size": 0}}
+        }
         if sport:
             query["sport"] = sport.value
         if commence_day:
             commence_time = datetime.combine(commence_day, datetime.min.time())
             query["commence_time"] = {'$gte': commence_time, '$lt': commence_time + timedelta(days=1)}
+        else:
+            commence_time = datetime.combine(datetime.utcnow(), datetime.min.time())
+            query["commence_time"] = {'$gte': commence_time}
         projection = {'bets': 0}
         if min_profit:
             matches_docs = self.client.aggregate([
@@ -68,7 +73,7 @@ class MatchesRepository(BaseRepository):
                 # Filter surebets without minimum profit
                 {
                     '$addFields': {
-                        "surebets" : {
+                        "surebets": {
                             "$filter": {
                                 "input": "$surebets",
                                 "as": "surebet",
@@ -77,7 +82,8 @@ class MatchesRepository(BaseRepository):
                         }
                     }
                 },
-                {'$project': projection}
+                {'$project': projection},
+                {'$match': query},
             ])
         else:
             matches_docs = self.client.find(query, projection)

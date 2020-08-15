@@ -1,7 +1,7 @@
 version: '3.2'
 services:
   db:
-    image: mongo:4
+    image: "mongo:4.0-xenial"
     ports:
       - "27017:27017"
   tests:

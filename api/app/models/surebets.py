@@ -47,8 +47,8 @@ class SureBetInResponse(RWModel):
 
 
 class SureBetFilterParams(RWModel):
-    commence_day: date
-    min_profit: float
+    commence_day: Optional[date]
+    min_profit: Optional[float]
     sport: Optional[Sport]
 
 

@@ -1,11 +1,10 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 import json
 
 
 def test_list_surebets(client, collection):
-    collection.insert_one(
-        {
+    past_match_with_surebets = {
             "sport": "basketball",
             "tournament": "test-cup",
             "tournament_nice": "Test Cup",
@@ -96,10 +95,20 @@ def test_list_surebets(client, collection):
             "slug": "testonia-basket-real-testing-sport-basketball-test-cup-1597350600",
             "feed": "testfeed_1"
         }
+    future_match_with_surebets = dict(past_match_with_surebets)
+    expected_commence_time = (datetime.utcnow() + timedelta(days=1)).replace(microsecond=0)
+    future_match_with_surebets["commence_time"] = expected_commence_time
+    collection.insert_many(
+        [
+            future_match_with_surebets,
+            past_match_with_surebets
+        ]
     )
+
+    # Surebets with filters
     response = client.get("/api/matches/surebets/", params={
         "sport": "basketball",
-        "commence_day": "2020-08-13",
+        "commence_day": expected_commence_time.strftime("%Y-%m-%d"),
         "min_profit": 0.1
     })
     assert response.status_code == 200
@@ -113,7 +122,7 @@ def test_list_surebets(client, collection):
             "Testonia Basket",
             "Real Testing"
         ],
-        "commenceTime": "2020-08-13T20:30:00Z",
+        "commenceTime": f"{expected_commence_time.isoformat()}Z",
         "url": '',
         "surebet": {
             "betType": "Winner",
@@ -139,6 +148,12 @@ def test_list_surebets(client, collection):
             ]
         }
     }
+
+    # Surebets without filters
+    response = client.get("/api/matches/surebets/")
+    assert response.status_code == 200
+    data = response.json()
+    assert data['surebetsCount'] == 2
 
 
 def test_create_surebet(client, collection):

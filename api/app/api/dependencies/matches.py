@@ -27,7 +27,7 @@ def get_matches_filters(
 
 def get_surebets_filters(
     sport: Optional[Sport] = None,
-    commence_day: Optional[datetime.date] = datetime.datetime.utcnow().date(),
+    commence_day: Optional[datetime.date] = None,
     min_profit: Optional[float] = None
 ) -> SureBetFilterParams:
     return SureBetFilterParams(
