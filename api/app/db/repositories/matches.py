@@ -62,8 +62,7 @@ class MatchesRepository(BaseRepository):
             commence_time = datetime.combine(commence_day, datetime.min.time())
             query["commence_time"] = {'$gte': commence_time, '$lt': commence_time + timedelta(days=1)}
         else:
-            commence_time = datetime.combine(datetime.utcnow(), datetime.min.time())
-            query["commence_time"] = {'$gte': commence_time}
+            query["commence_time"] = {'$gte': datetime.utcnow()}
         projection = {'bets': 0}
         if min_profit:
             matches_docs = self.client.aggregate([
