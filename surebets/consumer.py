@@ -1,5 +1,5 @@
 import json
-import traceback
+from datetime import datetime, timedelta
 import requests
 
 from confluent_kafka.avro import AvroConsumer
@@ -44,18 +44,24 @@ def run_consumer(group_id : str, broker_url: str, registry_url: str, subscriptio
             logger.error(f"Error generating model from Kafka event. Event: {msg.value()}")
             continue
 
-        surebets = SureBetsFinder(match.bets).find_all()
-        if surebets:
-            logger.info(f"{len(surebets)} surebets found for match '{match.slug}'")
-            data = json.dumps(list(map(lambda x: x.dict(), surebets)))
-            try:
-                response = requests.post(f"{apiestas_url}/api/matches/{match.slug}/surebets", data=data)
-                if response.status_code != 200:
-                    logger.error(f"There was an error submitting the surebet. Data: {data}")
-            except Exception:
-                logger.error(f"There was an error submitting the surebet. Data: {data}", exc_info=True)
-        else:
-            logger.info(f"No surebets found for match '{match.slug}'")
+        # We do not process surebets that has been created less than one minute ago
+        if not (match.surebets
+                and datetime.utcnow() - min(surebet.created_at for surebet in match.surebets) < timedelta(minutes=1)):
+            surebets = SureBetsFinder(match.bets).find_all()
+            if surebets:
+                logger.info(f"{len(surebets)} surebets found for match '{match.slug}'")
+                data = json.dumps(list(map(lambda x: x.dict(), surebets)))
+                try:
+                    response = requests.post(f"{apiestas_url}/api/matches/{match.slug}/surebets", data=data)
+                    if response.status_code != 200:
+                        logger.error(f"There was an error submitting the surebet. Data: {data}")
+                except Exception:
+                    logger.error(f"There was an error submitting the surebet. Data: {data}", exc_info=True)
+            else:
+                logger.info(f"No surebets found for match '{match.slug}'")
 
     consumer.close()
+
+    def check_surebets_recency(match: MatchInDB):
+        min(surebet.created_at for surebet in surebets)
 
