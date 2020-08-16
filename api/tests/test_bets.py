@@ -46,10 +46,10 @@ def test_get_bet(client, collection):
 
 
 def test_upsert_bet(client, collection):
-    match_slug = 'testeo-fc-ad-testing-soccer-test-cup-1597357800'
+    match_slug = 'testeo-fc-ad-testing-football-test-cup-1597357800'
     collection.insert_one(
         {
-            "sport": "soccer",
+            "sport": "football",
             "tournament": "test-cup",
             "tournament_nice": "Test Cup",
             "teams": [

@@ -43,7 +43,7 @@ def test_get_match_by_slug(client, collection):
 def test_list_matches(client, collection):
     collection.insert_many([
         {
-            "sport": "soccer",
+            "sport": "football",
             "tournament": "test-cup",
             "tournament_nice": "Test Cup",
             "teams": [
@@ -55,10 +55,10 @@ def test_list_matches(client, collection):
             "bets": [],
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow(),
-            "slug": "test-fc-ad-test-soccer-test-cup-1597350600",
+            "slug": "test-fc-ad-test-football-test-cup-1597350600",
         },
         {
-            "sport": "soccer",
+            "sport": "football",
             "tournament": "test-league",
             "tournament_nice": "Test League",
             "teams": [
@@ -70,10 +70,10 @@ def test_list_matches(client, collection):
             "bets": [],
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow(),
-            "slug": "ud-testing-atletico-de-testeo-soccer-test-league-1597318200",
+            "slug": "ud-testing-atletico-de-testeo-football-test-league-1597318200",
         },
         {
-            "sport": "soccer",
+            "sport": "football",
             "tournament": "test-league",
             "tournament_nice": "Test League",
             "teams": [
@@ -85,7 +85,7 @@ def test_list_matches(client, collection):
             "bets": [],
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow(),
-            "slug": "real-testing-fc-testalona-soccer-test-league-1597231800",
+            "slug": "real-testing-fc-testalona-football-test-league-1597231800",
         },
         {
             "sport": "basketball",
@@ -107,29 +107,29 @@ def test_list_matches(client, collection):
     # By Commence Day, sport and tournament
     response = client.get("/api/matches/", params={
         'commence_day': '2020-08-13',
-        'sport': 'soccer',
+        'sport': 'football',
         'tournament': 'test-league'
     })
     assert response.status_code == 200
     data = response.json()
     assert data['matchesCount'] == 1
-    assert data['matches'][0]['slug'] == "ud-testing-atletico-de-testeo-soccer-test-league-1597318200"
+    assert data['matches'][0]['slug'] == "ud-testing-atletico-de-testeo-football-test-league-1597318200"
 
     # By Commence Time and sport
     response = client.get("/api/matches/", params={
         'commence_time': '2020-08-13T20:30:00Z',
-        'sport': 'soccer',
+        'sport': 'football',
     })
     assert response.status_code == 200
     data = response.json()
     assert data['matchesCount'] == 1
-    assert data['matches'][0]['slug'] == "test-fc-ad-test-soccer-test-cup-1597350600"
+    assert data['matches'][0]['slug'] == "test-fc-ad-test-football-test-cup-1597350600"
 
 
 def test_find_match(client, collection):
     collection.insert_many([
         {
-            "sport": "soccer",
+            "sport": "football",
             "tournament": "test-cup",
             "tournament_nice": "Test Cup",
             "teams": [
@@ -141,10 +141,10 @@ def test_find_match(client, collection):
             "bets": [],
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow(),
-            "slug": "testeo-fc-ad-testing-soccer-test-cup-1597350600",
+            "slug": "testeo-fc-ad-testing-football-test-cup-1597350600",
         },
         {
-            "sport": "soccer",
+            "sport": "football",
             "tournament": "test-cup",
             "tournament_nice": "Test Cup",
             "teams": [
@@ -156,13 +156,13 @@ def test_find_match(client, collection):
             "bets": [],
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow(),
-            "slug": "testalona-fc-atletico-de-testeo-soccer-test-cup-1597350600",
+            "slug": "testalona-fc-atletico-de-testeo-football-test-cup-1597350600",
         }]
     )
 
     # Match found
     response = client.get("/api/matches/find", params={
-        'sport': 'soccer',
+        'sport': 'football',
         'commence_day': '2020-08-13',
         'similarity': 85,
         'teams': [
@@ -172,11 +172,11 @@ def test_find_match(client, collection):
     })
     assert response.status_code == 200
     data = response.json()
-    assert data['slug'] == "testeo-fc-ad-testing-soccer-test-cup-1597350600"
+    assert data['slug'] == "testeo-fc-ad-testing-football-test-cup-1597350600"
 
     # Match not found due to query filters
     response = client.get("/api/matches/find", params={
-        'sport': 'soccer',
+        'sport': 'football',
         'commence_day': '2020-08-14',
         'similarity': 85,
         'teams': [
@@ -188,7 +188,7 @@ def test_find_match(client, collection):
 
     # Match not found due to fuzzy search
     response = client.get("/api/matches/find", params={
-        'sport': 'soccer',
+        'sport': 'football',
         'commence_day': '2020-08-13',
         'similarity': 85,
         'teams': [
@@ -200,7 +200,7 @@ def test_find_match(client, collection):
 
     # Multiple matches due to low similarity
     response = client.get("/api/matches/find", params={
-        'sport': 'soccer',
+        'sport': 'football',
         'commence_day': '2020-08-13',
         'similarity': 40,
         'teams': [
@@ -214,7 +214,7 @@ def test_find_match(client, collection):
 def test_upsert_match(client, collection):
     collection.insert_one(
         {
-            "sport": "soccer",
+            "sport": "football",
             "tournament": "test-cup",
             "tournament_nice": "Test Cup",
             "teams": [
@@ -238,20 +238,20 @@ def test_upsert_match(client, collection):
                     ],
                     "created_at": datetime.utcnow(),
                     "updated_at": datetime.utcnow(),
-                    "slug": "testeo-fc-ad-testing-soccer-test-cup-1597350600-testbet-1-x-2-full-time-true",
+                    "slug": "testeo-fc-ad-testing-football-test-cup-1597350600-testbet-1-x-2-full-time-true",
                     "feed": "testfeed_1"
                 },
             ],
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow(),
-            "slug": "testeo-fc-ad-testing-soccer-test-cup-1597350600",
+            "slug": "testeo-fc-ad-testing-football-test-cup-1597350600",
             "feed": "testfeed_1"
         }
     )
 
     # Create new Match
     response = client.put("/api/matches/", data=json.dumps({
-        "sport": "soccer",
+        "sport": "football",
         "tournament": "test-cup",
         "tournament_nice": "Test Cup",
         "teams": [
@@ -259,7 +259,7 @@ def test_upsert_match(client, collection):
             "Atlético de Testeo"
         ],
         "commence_time": "2020-08-13T20:30:00Z",
-        "url": 'https://www.test.com/soccer/country/test-cup/testalona-fc-atletico-de-testeo-jRKgFPoT/',
+        "url": 'https://www.test.com/football/country/test-cup/testalona-fc-atletico-de-testeo-jRKgFPoT/',
         "bets": [
             {
                 "bookmaker": "testfair",
@@ -281,13 +281,13 @@ def test_upsert_match(client, collection):
     assert response.status_code == 200
     data = response.json()
     assert data['betsCount'] == 1
-    assert data['match']['slug'] == 'testalona-fc-atletico-de-testeo-soccer-test-cup-1597350600'
+    assert data['match']['slug'] == 'testalona-fc-atletico-de-testeo-football-test-cup-1597350600'
     assert (data['match']['bets'][0]['slug'] ==
-            'testalona-fc-atletico-de-testeo-soccer-test-cup-1597350600-testfair-1x2-full-time-true')
+            'testalona-fc-atletico-de-testeo-football-test-cup-1597350600-testfair-1x2-full-time-true')
 
     # Update existing match
     response = client.put("/api/matches/", data=json.dumps({
-        "sport": "soccer",
+        "sport": "football",
         "tournament": "test-cup",
         "tournament_nice": "Test Cup",
         "teams": [
@@ -295,7 +295,7 @@ def test_upsert_match(client, collection):
             "AD Testing"
         ],
         "commence_time": "2020-08-13T20:30:00Z",
-        "url": 'https://www.test.com/soccer/country/test-cup/testeo-fc-ad-testing-jRKgDPoT/',
+        "url": 'https://www.test.com/football/country/test-cup/testeo-fc-ad-testing-jRKgDPoT/',
         "bets": [
             {
                 "bookmaker": "testfair",
@@ -317,5 +317,5 @@ def test_upsert_match(client, collection):
     assert response.status_code == 200
     data = response.json()
     assert data['betsCount'] == 2
-    assert data['match']['slug'] == 'testeo-fc-ad-testing-soccer-test-cup-1597350600'
+    assert data['match']['slug'] == 'testeo-fc-ad-testing-football-test-cup-1597350600'
 
