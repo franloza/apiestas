@@ -108,8 +108,5 @@ ITEM_PIPELINES = {
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 # Configure API REST
-APIESTAS_API_URL = os.environ['APIESTAS_API_URL']
+APIESTAS_API_URL = os.getenv('APIESTAS_API_URL')
 APIESTAS_FIND_SIMILARITY_THRESHOLD = 80
-
-# Oddsportal spider
-ODDSPORTAL_MAX_BET_TYPES_PER_MATCH = 1
