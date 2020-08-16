@@ -17,10 +17,11 @@ class BetBase(RWModel):
                               description="Odds are in the same order as teams. For 3 outcome sports, "
                                           "the 3rd item in the list is the draw odd.", min_items=2,
                               example=[1.8, 4.33, 3.75]
-                            )
+                              )
+
 
 class Bet(DateTimeModelMixin, BetBase):
-    slug: str = Field(..., example="brighton-bournemouth-football-premier-league")
+    slug: str = Field(..., example="brighton-bournemouth-football-premier-league-bet365")
 
 
 class BetInDB(Bet):

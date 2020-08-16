@@ -32,28 +32,3 @@ class Match(scrapy.Item):
     url = scrapy.Field()
 
 
-class Sports(Enum):
-    FOOTBALL = "Football"
-    BASKETBALL = "Basketball"
-    TENNIS = "Tennis"
-    ICE_HOCKEY ="Ice hockey"
-    VOLLEYBALL = "Volleyball"
-
-
-class Bookmakers(Enum):
-    BET365 = "Bet365"
-    BWIN = "Bwin"
-    WILLIAM_HILL = "William Hill"
-    INTERWETTEN = "Interwetten"
-    MARCAAPUESTAS = "MARCA Apuestas"
-    PAF = "Paf"
-    BETFAIR = "Betfair"
-    LUCKIA = "Luckia"
-    SPORT888 = "888 Sport"
-    SPORTIUM = "Sportium"
-    CODERE = "Codere"
-    MARATHON_BET = "Marathon Bet"
-    BETWAY = "Betway"
-    RETABET= "RETAbet"
-    LEOVEGAS="LeoVegas"
-

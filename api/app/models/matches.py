@@ -7,6 +7,7 @@ from .bets import Bet, BetInUpsert, BetInDB
 from .common import DateTimeModelMixin
 from .enums import Sport
 from .rwmodel import RWModel
+from .surebets import SureBetInDB
 
 
 class MatchBase(RWModel):
@@ -26,6 +27,7 @@ class Match(DateTimeModelMixin, MatchBase):
 
 class MatchInDB(Match):
     bets: List[BetInDB]
+    surebets: Optional[List[SureBetInDB]] = None
     feed: str
 
 
@@ -43,7 +45,7 @@ class MatchFilterParams(RWModel):
 
 class ManyMatchesInResponse(RWModel):
     matches: List[Match]
-    matches_count : int
+    matches_count: int
 
 
 class MatchInUpsert(MatchBase):

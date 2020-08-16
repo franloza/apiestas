@@ -56,16 +56,40 @@ To run the web application in debug use::
 Development with Docker
 -----------------------
 
-You must have ``docker`` and ``docker-compose`` tools installed to work with material in this section. Then just run::
+You must have ``docker`` and ``docker-compose`` tools installed to work with material in this section.
+Then just run: ::
 
+    cd docker
     docker-compose up -d
 
-Application will be available on ``localhost`` or ``127.0.0.1`` in your browser.
+The API will be available on ``localhost:9000`` in your browser.
+
+If you want to enable the surebets calculation feature, you need to use the extended Docker Compose file for Kafka
+environment. This file is ``docker-compose.kafka.yml``. However, instead of executing this file directly along with
+``docker-compose.yml`` file, execute ``run-with-kafka.sh`` as it is necessary to set up Kafka Connect, MongoDB Replica Set
+and wait for the systems to be ready.
+containers initialization
+
+If you run Apiestas with Kafka and Kafka Connect, you will enable Kafka UI, where you can to examine the
+topics and other info.: ``http://localhost:9021`` or ``http://localhost:8001/``
+
+  * The `matches` topic should have the crawled bets and matches.
+  * The `mongo.apiestas.matches` topic should contain the change events.
+
+You can also examine the collections in the MongoDB by executing: ::
+
+    docker-compose exec mongo /usr/bin/mongo
+
+To see the logs of the different services, you can execute the following command: ::
+
+    docker-compose -f docker-compose.yml -f docker-compose.kafka.yml  logs -f api surebets crawler
+
 
 Run tests with Docker
 -----------------------
 ::
 
+    cd docker
     docker-compose -f docker-compose-test.yml run tests
 
 
@@ -88,12 +112,18 @@ Data sources
 ------------
 
 Currently the application implements two working crawlers:
-* ``oddsportalcom`` - Used as ground truth for matches and odds
-* ``elcomparador.com`` - for odds data
-* ``Codere`` - for odds data
+
+*  ``oddsportalcom`` - Used as ground truth for matches and odds
+*  ``elcomparador.com`` - for odds data
+*  ``Codere`` - for odds data
+
+Architecture
+------------
+.. image:: img/apiestas_arch.png
 
 TODO
 ----
-1) Implement surebets calculation
+1) Add support for more bet types calculation
+2) Support time series visualization
 
 

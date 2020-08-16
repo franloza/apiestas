@@ -9,6 +9,7 @@ from urllib.parse import urlencode
 from scrapy import Request
 
 from . import settings as st
+from .enums import Spiders
 
 
 class ApiestasPipeline(object):
@@ -23,7 +24,8 @@ class ApiestasPipeline(object):
         return cls(crawler)
 
     def process_item(self, item, spider):
-        if spider.name == "oddsportal":
+        if spider.name == Spiders.OODS_PORTAL.value:
+            # Match authority
             self.upsert_match(spider, item)
         else:
             if item['bets']:
@@ -32,8 +34,8 @@ class ApiestasPipeline(object):
 
     def find_match_and_insert_bet(self, spider, item, similarity=st.APIESTAS_FIND_SIMILARITY_THRESHOLD):
         query = (
-            ("commence_time", self._get_apiestas_datetime(item['date'])),
-            ("sport", self.get_sport_code(item["sport"])),
+            ("commence_time", self._get_apiestas_datetime(item['commence_time'])),
+            ("sport", item["sport"].value),
             ("teams", item["teams"][0]),
             ("teams", item["teams"][1]),
             ("similarity", similarity)
@@ -57,11 +59,9 @@ class ApiestasPipeline(object):
         item = failure.request.meta['item']
         if failure.value.response.status == 404:
             pass
-            # We need a better authority than elcomparador
-            #self.upsert_match(spider, item)
         elif failure.value.response.status == 422:
             new_similarity = failure.request.cb_kwargs['query'][-1][1] + 10
-            if new_similarity  <= 100:
+            if new_similarity <= 100:
                 self.find_match_and_insert_bet(spider, item, similarity=new_similarity)
         logging.error(json.loads(failure.value.response.body))
 
@@ -77,9 +77,6 @@ class ApiestasPipeline(object):
     def upsert_match_error_callback(self, failure):
         logging.error(json.loads(failure.value.response.body))
 
-    def get_sport_code(self, sport: str):
-        return sport.replace(' ', '_').lower()
-
     def get_apiestas_match(self, spider, item: dict):
         match = {
             'tournament': item['tournament'],
@@ -88,7 +85,7 @@ class ApiestasPipeline(object):
             'commence_time': self._get_apiestas_datetime(item['commence_time'])
                              if type(item['commence_time']) == str else item['commence_time'],
             "teams": item['teams'],
-            "sport": self.get_sport_code(item["sport"]),
+            "sport": item["sport"].value,
             "feed": spider.name,
             "bets": self.get_apiestas_bets(item.get("bets", []))
         }

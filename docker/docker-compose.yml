@@ -1,0 +1,49 @@
+version: '3.6'
+services:
+  mongo:
+    image: "mongo:4.0-xenial"
+    container_name: mongo
+    volumes:
+      - rs1:/data/db
+    networks:
+      - localnet
+    ports:
+      - "27017:27017"
+    restart: on-failure
+
+  crawler:
+    container_name: crawler
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    environment:
+      - APIESTAS_API_URL=api:9000
+    depends_on:
+      - api
+    command: crawler --bet-type "Home/Away" --bet-type "Draw No Bet"
+    networks:
+      - localnet
+
+  api:
+    container_name: api
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    environment:
+      - DB_CONNECTION=mongodb://mongo:27017
+      - DEBUG=true
+    ports:
+      - 9000:9000
+    depends_on:
+      - mongo
+    command: api
+    networks:
+      - localnet
+    restart: on-failure
+
+volumes:
+  rs1:
+
+networks:
+  localnet:
+    attachable: true

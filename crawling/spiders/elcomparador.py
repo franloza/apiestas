@@ -6,8 +6,10 @@ import re
 
 import scrapy
 
-from crawling.items import Match, Bet, Sports, Bookmakers
+from crawling.items import Match, Bet
+from crawling.enums import Bookmakers
 from crawling.utils.utils import extract_with_css
+from api.app.models.enums import Sport
 
 
 class ElComparadorSpider(scrapy.Spider):
@@ -17,8 +19,8 @@ class ElComparadorSpider(scrapy.Spider):
     rotate_user_agent = True
     main_url = 'http://www.elcomparador.com/html/contenido/mas_partidos.php?deporte={sport}&fecha={date}'
 
-    SPORTS_MAP = {1: Sports.FOOTBALL, 23: Sports.BASKETBALL, 2: Sports.TENNIS,
-                  5: Sports.ICE_HOCKEY}
+    SPORTS_MAP = {1: Sport.FOOTBALL, 23: Sport.BASKETBALL, 2: Sport.TENNIS,
+                  5: Sport.ICE_HOCKEY}
     BOOKMAKERS_MAP = {
         "bet365": Bookmakers.BET365,
         "bwin": Bookmakers.BWIN, 

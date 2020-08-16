@@ -1,15 +1,16 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Path
 from fuzzywuzzy import fuzz
 from slugify import slugify
 from starlette import status
 
 from ...api.dependencies.database import get_repository
-from ...api.dependencies.matches import get_matches_filters, get_match_by_slug_from_path
+from ...api.dependencies.matches import get_matches_filters, get_match_by_slug_from_path, check_by_slug_from_path
 from ...db.repositories.bets import BetsRepository
 from ...db.repositories.matches import MatchesRepository
 from ...models.bets import Bet, BetInUpsert
+from ...models.surebets import SureBet, SureBetInUpsert
 from ...resources import strings
 from ...models.matches import (
     ManyMatchesInResponse, MatchFilterParams, MatchInResponse, MatchInUpsert, Match, MatchInDB)
@@ -134,3 +135,16 @@ async def upsert_bet(
 ) -> Bet:
     bet = await bets_repo.upsert_bet(match=match, bet=bet)
     return bet
+
+
+@router.post(
+    '/{slug}/surebets',
+    response_model=Match,
+    name="bets:create-surebet"
+)
+async def create_surebets(
+        surebets: List[SureBetInUpsert],
+        match: MatchInDB = Depends(get_match_by_slug_from_path),
+        matches_repo: MatchesRepository = Depends(get_repository(MatchesRepository)),
+) -> dict:
+    await matches_repo.create_surebets(match=match, surebets=surebets)

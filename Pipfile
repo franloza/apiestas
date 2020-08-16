@@ -16,6 +16,9 @@ loguru = "*"
 python-slugify = "~=4.0"
 async-exit-stack = "*"
 async-generator = "*"
+confluent-kafka = "==1.2.0"
+requests = "*"
+avro-python3 = "*"
 js2xml = "==0.3.1"
 
 [dev-packages]

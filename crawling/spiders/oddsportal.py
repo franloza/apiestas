@@ -1,6 +1,7 @@
 import logging
 import urllib.parse
 from datetime import datetime
+from typing import List
 
 import js2xml
 import re
@@ -8,30 +9,28 @@ import json
 from urllib.parse import urlsplit, urljoin
 
 import scrapy
-from ..settings import ODDSPORTAL_MAX_BET_TYPES_PER_MATCH
 
 from crawling.items import Match, Bet
+from crawling.enums import Spiders, BetTypes
+from api.app.models.enums import Sport
 
 
 class OddsPortalSpider(scrapy.Spider):
 
     # Attributes
-    name = "oddsportal"
+    name = Spiders.OODS_PORTAL.value
     rotate_user_agent = False
     main_url = "https://www.oddsportal.com"
     odds_main_url = "https://fb.oddsportal.com"
     download_delay = 0.25
     user_agent = ('Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.131 '
                   'Safari/537.36')
-    sports_to_parse = (
-        "soccer",
-        "basketball",
-        "tennis",
-        "volleyball"
-    )
 
-    def __init__(self, **kwargs):
+    def __init__(self, sports: List[Sport] = None, bet_types: List[BetTypes] = None,
+                 **kwargs):
         super().__init__(**kwargs)
+        self.sports = self._get_sport_names(sports) if sports else None
+        self.bet_types = [bet_type.value for bet_type in bet_types] if bet_types else None
         self.tournament_urls = {}
         self.bookmakers_data = {}
         self.scope_ids = {}
@@ -97,7 +96,11 @@ class OddsPortalSpider(scrapy.Spider):
             response.xpath(xpath.format(property="text()")).getall()))
         for tournament_url in self.tournament_urls:
             sport, country, tournament = urlsplit(tournament_url).path.split('/')[1:4]
-            if sport in self.sports_to_parse:
+            if not self.sports or sport in self.sports:
+                try:
+                    sport = self._get_sport_from_name(sport)
+                except ValueError:
+                    continue
                 yield scrapy.Request(url=response.urljoin(tournament_url), callback=self.parse_matches,
                                      headers={'user-agent': self.user_agent},
                                      meta={'tournament_url': tournament_url,
@@ -172,13 +175,12 @@ class OddsPortalSpider(scrapy.Spider):
         bets_to_parse = []
         if parsed_dict.get('d', {}).get('nav'):
             for i, betting_type_id in enumerate(parsed_dict['d']['nav']):
-                if ODDSPORTAL_MAX_BET_TYPES_PER_MATCH and i >= ODDSPORTAL_MAX_BET_TYPES_PER_MATCH:
-                    break
-                for scope_id in parsed_dict['d']['nav'][betting_type_id]:
-                    odds_url = (f'/feed/match/{response.meta["page_info"]["versionId"]}-'
-                                f'{response.meta["page_info"]["sportId"]}-{response.meta["page_info"]["id"]}'
-                                f'-{betting_type_id}-{scope_id}-{response.meta["page_info"]["xhash"]}.dat')
-                    bets_to_parse.append((odds_url, betting_type_id, scope_id))
+                if (not self.bet_types) or self.globals["betting_type_names"][betting_type_id]["name"] in self.bet_types:
+                    for scope_id in parsed_dict['d']['nav'][betting_type_id]:
+                        odds_url = (f'/feed/match/{response.meta["page_info"]["versionId"]}-'
+                                    f'{response.meta["page_info"]["sportId"]}-{response.meta["page_info"]["id"]}'
+                                    f'-{betting_type_id}-{scope_id}-{response.meta["page_info"]["xhash"]}.dat')
+                        bets_to_parse.append((odds_url, betting_type_id, scope_id))
             if bets_to_parse:
                 logging.info(f"Start parsing {len(bets_to_parse)} types of bets from match with URL "
                              f"{response.meta['match_url']}.")
@@ -214,25 +216,27 @@ class OddsPortalSpider(scrapy.Spider):
                 # Bet Level 2: Odds, volume, movement and bet information
                 bet_info = parsed_dict['d']['oddsdata'][bet_l1][bet_l2]
                 for bookmaker_id in bet_info['odds']:
-                    odds =  bet_info['odds'][bookmaker_id]
-                    if type(odds) == dict:
-                        if bet_type == "1X2":
-                            odds = [odds[odd_type] for odd_type in ('1', '2', 'X') if odd_type in odds]
-                        else:
-                            odds = list(odds.values())
-                    bet_dict = {
-                        "bookmaker": self.bookmakers_data[bookmaker_id]['WebUrl'],
-                        "bookmaker_nice": self.bookmakers_data[bookmaker_id]['WebName'],
-                        "feed" :  self.name,
-                        "date_extracted" :  datetime.utcnow(),
-                        "bet_type":  bet_type,
-                        "bet_scope": bet_scope,
-                        "odds" : odds,
-                        "url" :  response.url,
-                        "is_back":  bet_info['isBack']
-                    }
-                    bet = Bet(**bet_dict)
-                    bets.append(bet)
+                    is_active = bet_info['act'][bookmaker_id]
+                    if is_active:
+                        odds = bet_info['odds'][bookmaker_id]
+                        if type(odds) == dict:
+                            if bet_type == "1X2":
+                                odds = [odds[odd_type] for odd_type in ('1', '2', 'X') if odd_type in odds]
+                            else:
+                                odds = list(odds.values())
+                        bet_dict = {
+                            "bookmaker": self.bookmakers_data[bookmaker_id]['WebUrl'],
+                            "bookmaker_nice": self.bookmakers_data[bookmaker_id]['WebName'],
+                            "feed" :  self.name,
+                            "date_extracted" :  datetime.utcnow(),
+                            "bet_type":  bet_type,
+                            "bet_scope": bet_scope,
+                            "odds" : odds,
+                            "url" :  response.url,
+                            "is_back":  bet_info['isBack']
+                        }
+                        bet = Bet(**bet_dict)
+                        bets.append(bet)
 
         logging.info(f"Parsed {len(bets)} bets of type {bet_type} and scope {bet_scope}. Url: {response.url}. "
                      f"Remaining bets of match to parse: {len(response.meta['bets_to_parse'])}")
@@ -251,4 +255,30 @@ class OddsPortalSpider(scrapy.Spider):
             logging.info(f"Finished parsing {len(response.meta['bets'])} bets "
                          f"from match with URL {response.meta['match_url']}.")
             yield Match(**match)
+
+    @staticmethod
+    def _get_sport_names(sports: List[Sport]) -> List[str]:
+        sport_names = []
+        for sport in sports:
+            if sport == Sport.FOOTBALL:
+                sport_name = "soccer"
+            elif sport == Sport.ICE_HOCKEY:
+                # Not available in Odds Portal
+                continue
+            else:
+                sport_name = sport.value.lower()
+            sport_names.append(sport_name)
+        return sport_names
+
+    def _get_sport_from_name(self, sport_name: str) -> Sport:
+        if sport_name == "soccer":
+            sport = Sport.FOOTBALL
+        elif sport_name.startswith('rugby'):
+            sport = Sport.RUGBY
+        else:
+            sport = Sport(sport_name.lower().replace(' ', '-'))
+        return sport
+
+
+
 

@@ -6,7 +6,11 @@ import re
 import scrapy
 import dateparser
 
-from crawling.items import Match, Bet, Sports, Bookmakers
+from api.app.models.enums import Sport
+from crawling.items import Match, Bet
+from crawling.enums import Bookmakers
+
+
 
 class CodereSpider(scrapy.Spider):
 
@@ -15,8 +19,8 @@ class CodereSpider(scrapy.Spider):
     rotate_user_agent = True
     main_url = 'https://m.apuestas.codere.es/csbgonline/home/GetSports?languageCode=es'
     sports = ['Baloncesto', 'Tenis', 'Voleibol']
-    SPORTS_MAP = {"volleyball": Sports.VOLLEYBALL, "basketball": Sports.BASKETBALL,
-                  "tennis": Sports.TENNIS}
+    SPORTS_MAP = {"volleyball": Sport.VOLLEYBALL, "basketball": Sport.BASKETBALL,
+                  "tennis": Sport.TENNIS}
 
     def start_requests(self):
         yield scrapy.Request(url=self.main_url, callback=self.parse)
