@@ -212,25 +212,27 @@ class OddsPortalSpider(scrapy.Spider):
                 # Bet Level 2: Odds, volume, movement and bet information
                 bet_info = parsed_dict['d']['oddsdata'][bet_l1][bet_l2]
                 for bookmaker_id in bet_info['odds']:
-                    odds =  bet_info['odds'][bookmaker_id]
-                    if type(odds) == dict:
-                        if bet_type == "1X2":
-                            odds = [odds[odd_type] for odd_type in ('1', '2', 'X') if odd_type in odds]
-                        else:
-                            odds = list(odds.values())
-                    bet_dict = {
-                        "bookmaker": self.bookmakers_data[bookmaker_id]['WebUrl'],
-                        "bookmaker_nice": self.bookmakers_data[bookmaker_id]['WebName'],
-                        "feed" :  self.name,
-                        "date_extracted" :  datetime.utcnow(),
-                        "bet_type":  bet_type,
-                        "bet_scope": bet_scope,
-                        "odds" : odds,
-                        "url" :  response.url,
-                        "is_back":  bet_info['isBack']
-                    }
-                    bet = Bet(**bet_dict)
-                    bets.append(bet)
+                    is_active = bet_info['act'][bookmaker_id]
+                    if is_active:
+                        odds = bet_info['odds'][bookmaker_id]
+                        if type(odds) == dict:
+                            if bet_type == "1X2":
+                                odds = [odds[odd_type] for odd_type in ('1', '2', 'X') if odd_type in odds]
+                            else:
+                                odds = list(odds.values())
+                        bet_dict = {
+                            "bookmaker": self.bookmakers_data[bookmaker_id]['WebUrl'],
+                            "bookmaker_nice": self.bookmakers_data[bookmaker_id]['WebName'],
+                            "feed" :  self.name,
+                            "date_extracted" :  datetime.utcnow(),
+                            "bet_type":  bet_type,
+                            "bet_scope": bet_scope,
+                            "odds" : odds,
+                            "url" :  response.url,
+                            "is_back":  bet_info['isBack']
+                        }
+                        bet = Bet(**bet_dict)
+                        bets.append(bet)
 
         logging.info(f"Parsed {len(bets)} bets of type {bet_type} and scope {bet_scope}. Url: {response.url}. "
                      f"Remaining bets of match to parse: {len(response.meta['bets_to_parse'])}")
