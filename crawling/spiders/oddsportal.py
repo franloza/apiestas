@@ -97,10 +97,14 @@ class OddsPortalSpider(scrapy.Spider):
         for tournament_url in self.tournament_urls:
             sport, country, tournament = urlsplit(tournament_url).path.split('/')[1:4]
             if not self.sports or sport in self.sports:
+                try:
+                    sport = self._get_sport_from_name(sport)
+                except ValueError:
+                    continue
                 yield scrapy.Request(url=response.urljoin(tournament_url), callback=self.parse_matches,
                                      headers={'user-agent': self.user_agent},
                                      meta={'tournament_url': tournament_url,
-                                           'sport': self._get_sport_from_name(sport),
+                                           'sport': sport,
                                            'country': country,
                                            'tournament': tournament
                                            })

@@ -123,6 +123,7 @@ Architecture
 
 TODO
 ----
-1) Implement surebets calculation
+1) Add support for more bet types calculation
+2) Support time series visualization
 
 

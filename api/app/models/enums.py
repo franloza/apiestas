@@ -16,4 +16,6 @@ class Sport(str, Enum):
     BADMINTON = "badminton"
     CRICKET = "cricket"
     SNOOKER = "snooker"
+    DARTS = "darts"
+    BOXING = "boxing"
 
