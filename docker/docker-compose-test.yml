@@ -1,6 +1,6 @@
 version: '3.2'
 services:
-  db:
+  mongo:
     image: "mongo:4.0-xenial"
     ports:
       - "27017:27017"
@@ -12,7 +12,7 @@ services:
       - DB_CONNECTION=mongodb://db:27017
       - DEBUG=true
     depends_on:
-      - db
+      - mongo
     entrypoint: pytest
     volumes:
       - ..:/apiestas

@@ -65,8 +65,9 @@ class OddsPortalSpider(scrapy.Spider):
         parsed = js2xml.parse(response.text)
         globals_node = parsed.xpath('//funcdecl[@name="Globals"]')[0]
         xpath_right_assignment = '//assign[./left//identifier/@name="{name}"]/right/object'
+        xpath_function_arguments = '//functioncall[.//identifier/@name="{name}"]/arguments/object'
         self.globals["betting_type_names"] = (
-            js2xml.make_dict(globals_node.xpath('//functioncall[.//identifier/@name="initBettingTypes"]/arguments/object')[0]))
+            js2xml.make_dict(globals_node.xpath(xpath_function_arguments.format(name='initBettingTypes'))[0]))
         self.globals["betting_type_ids"] = {value['name']:key for key,value in self.globals["betting_type_names"].items()}
         self.globals["scope_names"] = (js2xml.make_dict(globals_node.xpath(
             xpath_right_assignment.format(name='scopeNames'))[0]))
@@ -81,6 +82,8 @@ class OddsPortalSpider(scrapy.Spider):
             xpath_right_assignment.format(name='countryData'))[0]))
         self.globals['country_names'] = {value['url']: value['name'] for key, value in
                                          self.globals['country_data'].items()}
+        self.globals["handicap_names"] = (
+            js2xml.make_dict(globals_node.xpath(xpath_function_arguments.format(name='initHandicaps'))[0]))
 
         # Constant variables
         self.globals['cons'] = js2xml.make_dict(
@@ -231,9 +234,10 @@ class OddsPortalSpider(scrapy.Spider):
                             "date_extracted" :  datetime.utcnow(),
                             "bet_type":  bet_type,
                             "bet_scope": bet_scope,
-                            "odds" : odds,
-                            "url" :  response.url,
-                            "is_back":  bet_info['isBack']
+                            "odds": odds,
+                            "url":  response.url,
+                            "is_back":  bet_info['isBack'],
+                            "handicap": float(bet_info['handicapValue']) if "handicapValue" in bet_info else None
                         }
                         bet = Bet(**bet_dict)
                         bets.append(bet)

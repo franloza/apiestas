@@ -48,6 +48,8 @@ class BetsRepository(BaseRepository):
         return slugify(','.join
                        (match.teams + list(map(str, (match.sport.value, match.tournament,
                                                      calendar.timegm(match.commence_time.utctimetuple()),
-                                                     bet.bookmaker, bet.bet_type, bet.bet_scope, bet.is_back)))))
+                                                     bet.bookmaker, bet.bet_type, bet.bet_scope, bet.is_back,
+                                                     bet.handicap if bet.handicap else ''
+                                                     )))))
 
 

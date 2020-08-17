@@ -89,21 +89,21 @@ def test_upsert_bet(client, collection):
         data=json.dumps({
             "bookmaker": "testfair",
             "bookmaker_nice": "Testfair",
-            "bet_type": "1X2",
+            "bet_type": "Over/Under",
             "bet_scope": "Full Time",
             "is_back": True,
             "url": "https://data.testingportal.com/feed/match/1-12-jRKgDPoT-2-12-abcd2.dat",
             "odds": [
                 1.79,
                 1.95,
-                3.1
             ],
-            "feed": "testfeed_2"
+            "feed": "testfeed_2",
+            "handicap": 1.00
         }
         ))
     assert response.status_code == 200
     data = response.json()
-    assert data['slug'] == f'{match_slug}-testfair-1x2-full-time-true'
+    assert data['slug'] == f'{match_slug}-testfair-over-under-full-time-true-1-0'
 
     # Update existing bet
     response = client.put(
@@ -132,4 +132,4 @@ def test_upsert_bet(client, collection):
     assert len(bets_in_db) == 2
     odds = {d["bookmaker"]: d['odds'] for d in bets_in_db}
     assert odds['testbet'] == [1.85, 1.9, 2.9]
-    assert odds['testfair'] == [1.79, 1.95, 3.1]
+    assert odds['testfair'] == [1.79, 1.95]

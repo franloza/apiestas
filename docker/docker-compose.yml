@@ -20,7 +20,7 @@ services:
       - APIESTAS_API_URL=api:9000
     depends_on:
       - api
-    command: crawler --bet-type "Home/Away" --bet-type "Draw No Bet"
+    command: crawler --bet-type "Home/Away" --bet-type "Draw No Bet" --bet-type "Over/Under"
     networks:
       - localnet
 

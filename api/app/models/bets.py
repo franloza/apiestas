@@ -12,6 +12,7 @@ class BetBase(RWModel):
     bet_type: str = Field(..., example='1X2')
     bet_scope: str = Field(..., example='Full time')
     is_back: bool = Field(..., description="If the bet is back (True) or lay (False)")
+    handicap: float = Field(description="Handicap of the bet (If applies)", default=0)
     url: Optional[str] = Field(None, example= "http://www.bet365.com/betslip/instantbet/...")
     odds: List[float] = Field(...,
                               description="Odds are in the same order as teams. For 3 outcome sports, "

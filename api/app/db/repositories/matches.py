@@ -133,7 +133,9 @@ class MatchesRepository(BaseRepository):
     @staticmethod
     def _get_surebet_slug(match: MatchBase, surebet: SureBetBase) -> str:
         slug_elems = match.teams + [match.sport.value, match.tournament, calendar.timegm(match.commence_time.utctimetuple()),
-                                    surebet.bet_type, surebet.bet_scope, surebet.is_back, surebet.outcomes[0].bookmaker,
+                                    surebet.bet_type, surebet.bet_scope, surebet.is_back,
+                                    surebet.handicap if surebet.handicap else '',
+                                    surebet.outcomes[0].bookmaker,
                                     surebet.outcomes[1].bookmaker]
         if len(surebet.outcomes) > 2:
             slug_elems.append(surebet.outcomes[2].bookmaker)

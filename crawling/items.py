@@ -19,6 +19,7 @@ class Bet(scrapy.Item):
     odds = scrapy.Field()
     url = scrapy.Field()
     is_back = scrapy.Field()
+    handicap = scrapy.Field()
 
 
 class Match(scrapy.Item):

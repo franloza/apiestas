@@ -19,6 +19,7 @@ class SureBetBase(RWModel):
     bet_type: str = Field(..., example='1X2')
     bet_scope: str = Field(..., example='Full time')
     is_back: bool = Field(..., description="If the bet is back (True) or lay (False)")
+    handicap: Optional[float] = Field(description="Handicap of the bet (If applies)", default=0)
     outcomes: List[Outcome] = Field(...,
                                     description="Outcomes provided for every bookmaker in order. For 3 outcome sports, "
                                                 "the 3rd item in the list is the draw odd.", min_items=2,
