@@ -101,6 +101,7 @@ class ApiestasPipeline(object):
                         "is_back": bet["is_back"],
                         "bet_type": bet["bet_type"],
                         "bet_scope": bet["bet_scope"],
+                        "handicap": bet["handicap"],
                         "url": bet["url"],
                         "feed": bet["feed"],
                         "odds": bet["odds"]

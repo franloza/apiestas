@@ -10,28 +10,29 @@ class SureBetsFinder:
     def __init__(self, bets: List[Bet]):
         self.bets_tree = recursive_defaultdict()
         for bet in bets:
-            self.bets_tree[bet.bet_type][bet.bet_scope][bet.is_back][bet.slug] = bet
+            self.bets_tree[bet.bet_type][bet.bet_scope][bet.is_back][bet.handicap][bet.slug] = bet
 
     def find_all(self) -> List[SureBetInUpsert]:
         all_arbs = []
         for bet_type, bet_scopes in self.bets_tree.items():
             for bet_scope, is_back_bets in bet_scopes.items():
-                for is_back, bets in is_back_bets.items():
-                    arbs = self._find_all(bet_type, bets.values())
-                    if arbs:
-                        for outcomes, profit in arbs:
-                            all_arbs.append(
-                                SureBetInUpsert(
-                                    bet_type=bet_type,
-                                    bet_scope=bet_scope,
-                                    is_back=is_back,
-                                    outcomes=outcomes,
-                                    profit=profit
+                for is_back, handicap_bets in is_back_bets.items():
+                    for handicap, bets in handicap_bets.items():
+                        arbs = self._find_all(bet_type, bets.values())
+                        if arbs:
+                            for outcomes, profit in arbs:
+                                all_arbs.append(
+                                    SureBetInUpsert(
+                                        bet_type=bet_type,
+                                        bet_scope=bet_scope,
+                                        is_back=is_back,
+                                        outcomes=outcomes,
+                                        profit=profit
+                                    )
                                 )
-                            )
         return all_arbs
 
-    def find_home_away(self, bets: List[Bet]) -> Iterable[Tuple[List[Outcome], float]]:
+    def find_two_way(self, bets: List[Bet]) -> Iterable[Tuple[List[Outcome], float]]:
         filtered_bets = tuple(filter(lambda x: len(x.odds) == 2, bets))
         rng = range(len(filtered_bets))
         permutations = ((filtered_bets[i], filtered_bets[j]) for i in rng for j in rng if i != j)
@@ -56,8 +57,9 @@ class SureBetsFinder:
         return 1 - (1 / odd_1 + 1 / odd_2)
 
     def _find_all(self, bet_type: str, bets: list) -> Union[List[tuple], None]:
-        if bet_type in ('Home/Away', 'Draw No Bet'):
-            yield from self.find_home_away(bets)
+        # Two-way handicaps
+        if bet_type in ('Home/Away', 'Draw No Bet', 'Over/Under'):
+            yield from self.find_two_way(bets)
 
 
 
