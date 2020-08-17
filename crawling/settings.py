@@ -84,6 +84,7 @@ EXTENSIONS = {
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'crawling.pipelines.ApiestasPipeline': 300,
+    'crawling.pipelines.InfluxDBPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -107,6 +108,12 @@ ITEM_PIPELINES = {
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-# Configure API REST
+# Configure Apiestas API REST
 APIESTAS_API_URL = os.getenv('APIESTAS_API_URL')
 APIESTAS_FIND_SIMILARITY_THRESHOLD = 80
+
+# Configure InfluxDB
+INFLUXDB_HOST = os.getenv('INFLUXDB_HOST')
+INFLUXDB_PORT = os.getenv('INFLUXDB_PORT')
+INFLUXDB_USER = os.getenv('INFLUXDB_USER')
+INFLUXDB_PASSWORD = os.getenv('INFLUXDB_PASSWORD')

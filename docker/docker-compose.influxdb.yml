@@ -1,0 +1,54 @@
+version: '2'
+services:
+  influxdb:
+    image: influxdb:1.8-alpine
+    ports:
+      - '8086:8086'
+    volumes:
+      - influxdb-storage:/var/lib/influxdb
+    environment:
+      - INFLUXDB_DB=db0
+      - INFLUXDB_ADMIN_USER=apiestas
+      - INFLUXDB_ADMIN_PASSWORD=apiestas
+
+  crawler:
+    container_name: crawler
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    environment:
+      - INFLUXDB_HOST=influxdb
+      - INFLUXDB_PORT=8086
+      - INFLUXDB_USER=apiestas
+      - INFLUXDB_PASSWORD=apiestas
+    depends_on:
+      - influxdb
+    command: crawler --bet-type "Home/Away" --bet-type "Draw No Bet" --bet-type "Over/Under" --sport basketball
+
+  chronograf:
+    image: chronograf:latest
+    ports:
+      - '127.0.0.1:8888:8888'
+    volumes:
+      - chronograf-storage:/var/lib/chronograf
+    depends_on:
+      - influxdb
+    environment:
+      - INFLUXDB_USERNAME=apiestas
+      - INFLUXDB_PASSWORD=apiestas
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - '3000:3000'
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./grafana-provisioning/:/etc/grafana/provisioning
+    depends_on:
+      - influxdb
+    environment:
+      - GF_SECURITY_ADMIN_USER=apiestas
+      - GF_SECURITY_ADMIN_PASSWORD=apiestas
+volumes:
+  influxdb-storage:
+  chronograf-storage:
+  grafana-storage:

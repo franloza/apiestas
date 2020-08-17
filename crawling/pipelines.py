@@ -7,9 +7,55 @@ import logging
 from urllib.parse import urlencode
 
 from scrapy import Request
+from influxdb import InfluxDBClient
+
 
 from . import settings as st
 from .enums import Spiders
+
+
+class InfluxDBPipeline:
+
+    FIELD_NAMES = ('odd_1', 'odd_2', 'odd_x')
+
+    def __init__(self, crawler):
+        self.crawler = crawler
+        if st.INFLUXDB_HOST:
+            self.client = InfluxDBClient(st.INFLUXDB_HOST, st.INFLUXDB_PORT, st.INFLUXDB_USER, st.INFLUXDB_PASSWORD,
+                                         'matches')
+            self.client.create_database('matches')
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler)
+
+    def process_item(self, item, spider):
+        if st.INFLUXDB_HOST:
+            match = dict(item)
+            bets = match.pop('bets')
+            teams = match.pop('teams')
+            match["name"] = " - ".join(teams)
+            match["sport"] = match["sport"].value
+            for bet in bets:
+                bet = dict(bet)
+                time = bet.pop("date_extracted").astimezone(pytz.utc).isoformat()
+                odds = bet.pop('odds')
+                tags = {
+                    **match,
+                    **bet
+                }
+                json_body = [
+                    {
+                        "measurement": self.FIELD_NAMES[i],
+                        "tags": tags,
+                        "time": time,
+                        "fields": {
+                            "value": float(odd)
+                        }
+                    } for i, odd in enumerate(odds)
+                ]
+                self.client.write_points(json_body)
+        return item
 
 
 class ApiestasPipeline(object):
@@ -24,12 +70,13 @@ class ApiestasPipeline(object):
         return cls(crawler)
 
     def process_item(self, item, spider):
-        if spider.name == Spiders.OODS_PORTAL.value:
-            # Match authority
-            self.upsert_match(spider, item)
-        else:
-            if item['bets']:
-                self.find_match_and_insert_bet(spider, item)
+        if st.APIESTAS_API_URL:
+            if spider.name == Spiders.OODS_PORTAL.value:
+                # Match authority
+                self.upsert_match(spider, item)
+            else:
+                if item['bets']:
+                    self.find_match_and_insert_bet(spider, item)
         return item
 
     def find_match_and_insert_bet(self, spider, item, similarity=st.APIESTAS_FIND_SIMILARITY_THRESHOLD):

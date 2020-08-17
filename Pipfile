@@ -20,6 +20,7 @@ confluent-kafka = "==1.2.0"
 requests = "*"
 avro-python3 = "*"
 js2xml = "==0.3.1"
+influxdb = "*"
 
 [dev-packages]
 pylint = "*"
