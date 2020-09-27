@@ -15,9 +15,9 @@ from twisted.internet.task import deferLater
 
 from crawling.spiders import OddsPortalSpider
 
-CRAWLING_INTERVAL = os.getenv('CRAWLING_INTERVAL', 300)
+CRAWLING_INTERVAL = int(os.getenv('CRAWLING_INTERVAL', 300))
 CRAWLERS = {
-    Spiders.OODS_PORTAL: OddsPortalSpider
+    Spiders.OODS_PORTAL: OddsPortalSpider,
 }
 
 
@@ -30,43 +30,30 @@ def crash(failure):
     logging.error(failure.getTraceback())
 
 
-def start_in_parallel(process: CrawlerProcess, crawlers: list, **kwargs):
-    def _crawl(result, spider):
-        deferred = process.crawl(spider, **kwargs)
-        deferred.addCallback(lambda results:
-                             logging.info(f"Waiting {CRAWLING_INTERVAL} seconds to start a new crawling process"))
-        deferred.addErrback(crash)
-        deferred.addCallback(sleep, seconds=CRAWLING_INTERVAL)
-        deferred.addCallback(_crawl, spider)
-        return deferred
-
-    process = CrawlerProcess(get_project_settings())
-    for crawler in crawlers:
-        _crawl(None, crawler)
-    process.start()
-
-
-def start_sequentially(process: CrawlerProcess, crawlers: list, **kwargs):
-    print('Starting crawler {}'.format(crawlers[0].__name__))
+def start_sequentially(process: CrawlerProcess, spiders: List[Spiders], crawlers: list, **kwargs):
+    if not crawlers:
+        crawlers = get_crawlers(spiders)
+    logging.info('Starting crawler {}'.format(crawlers[0].__name__))
     deferred = process.crawl(crawlers[0], **kwargs)
     deferred.addErrback(crash)
     if len(crawlers) > 1:
-        deferred.addCallback(lambda _: start_sequentially(process, crawlers[1:], **kwargs))
+        deferred.addCallback(lambda _: start_sequentially(process, spiders, crawlers[1:], **kwargs))
     else:
         deferred.addCallback(lambda results:
-                             logging.info(f"Waiting {CRAWLING_INTERVAL} seconds to start a new crawling process"))
+                             logging.info(f"Finished all crawlers. "
+                                          f"Waiting {CRAWLING_INTERVAL} seconds to start a new crawling process"))
         deferred.addCallback(sleep, seconds=CRAWLING_INTERVAL)
-        deferred.addCallback(lambda _: start_sequentially(process, CRAWLERS))
+        deferred.addCallback(lambda _: start_sequentially(process, spiders, None, **kwargs))
 
 
-def start_process(spiders: List[Spiders] = None, parallel=False, **kwargs):
-    crawlers = [CRAWLERS[spider] for spider in spiders] or list(CRAWLERS.values())
+def start_process(spiders: List[Spiders] = None, **kwargs):
     process = CrawlerProcess(settings=get_project_settings())
-    if parallel:
-        start_in_parallel(process, crawlers, **kwargs)
-    else:
-        start_sequentially(process, crawlers,  **kwargs)
+    start_sequentially(process, spiders,  crawlers=None, **kwargs)
     process.start()
+
+
+def get_crawlers(spiders: List[Spiders]) -> list:
+    return [CRAWLERS[spider] for spider in spiders] or list(CRAWLERS.values())
 
 
 if __name__ == '__main__':
